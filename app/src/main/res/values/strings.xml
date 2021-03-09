@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Anton\'s FYP</string>
+    <string name="search_bar">Search</string>
+    <string name="placeholder_title">BSL 4 Kids</string>
+    <string name="search_button">Search</string>
+    <string name="options_button">Options</string>
+    <string name="profile_button">Profile</string>
+    <string name="add_word_button">Add Word/Phrase</string>
+    <string name="enter_word_button">Enter Word/Phrase</string>
+    <string name="enter_definition_button">Enter Defintion</string>
+    <string name="select_gallery_button">Select Video From Gallery</string>
+    <string name="camera_icon">Camera Icon</string>
+    <string name="word_preview_title">Word/Phrase</string>
+    <string name="definition_title">Definition</string>
+</resources>

@@ -1,0 +1,2 @@
+configurations.maybeCreate("default")
+artifacts.add("default", file('httpclient5-5.0.3.jar'))
