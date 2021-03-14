@@ -27,23 +27,26 @@ public class AddWordActivity extends AppCompatActivity {
 
     //Takes user input and adds a word entry to database
     //TODO Validation
+    //TODO Probe db for availability
     public void addWordToDB(View view) {
         //Get editText boxes
         EditText editWordName = (EditText) findViewById(R.id.editWordName);
-        EditText editWordDesc = (EditText) findViewById(R.id.editWordDesc);
+        //EditText editWordDesc = (EditText) findViewById(R.id.editWordDesc);
         //Extract strings from editText
         String wordName = editWordName.getText().toString();
-        String wordDesc = editWordDesc.getText().toString();
+        //String wordDesc = editWordDesc.getText().toString();
         //Create NetworkTask instance
-        String type = "AddWord";
-        NetworkTask task = new NetworkTask(this);
-        task.execute(type,wordName,wordDesc);
+        //String type = "AddWord";
+        //NetworkTask task = new NetworkTask(this);
+        //task.execute(type,wordName,wordDesc);
         //Upload video
-        UploadUtility uploadUtility = new UploadUtility(this);
-        uploadUtility.uploadFile(VideoFileData.getData(),(wordName + ".mp4"));
-        //Take user back to main menu
-        //Intent intent = new Intent (this, MainActivity.class);
-        //startActivity(intent);
+        //UploadUtility uploadUtility = new UploadUtility(this);
+        //uploadUtility.uploadFile(VideoFileData.getData(),(wordName + ".mp4"));
+
+        //Take user to next activity
+        Intent intent = new Intent (this, AddDescActivity.class);
+        intent.putExtra("WORD_NAME",wordName);
+        startActivity(intent);
     }
 
     //Get video for upload

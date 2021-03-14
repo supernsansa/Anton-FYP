@@ -60,19 +60,16 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.974" />
 
-    <TextView
-        android:id="@+id/placeholderTitle"
-        android:layout_width="323dp"
-        android:layout_height="56dp"
-        android:layout_marginTop="36dp"
-        android:fontFamily="casual"
-        android:text="@string/placeholder_title"
-        android:textAlignment="center"
-        android:textSize="36sp"
-        android:textStyle="bold"
-        android:typeface="sans"
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="396dp"
+        android:layout_height="139dp"
+        android:layout_marginTop="28dp"
+        android:contentDescription="@string/logo"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.466"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/BSL4Kids_logo" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

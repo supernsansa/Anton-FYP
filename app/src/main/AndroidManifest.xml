@@ -15,7 +15,27 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".WordActivity"></activity>
+        <activity
+            android:name=".AddVideoActivity"
+            android:parentActivityName=".AddDescActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".AddDescActivity" />
+        </activity>
+        <activity
+            android:name=".AddDescActivity"
+            android:parentActivityName=".AddWordActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".AddWordActivity" />
+        </activity>
+        <activity
+            android:name=".WordActivity"
+            android:parentActivityName=".BrowseActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".BrowseActivity" />
+        </activity>
         <activity
             android:name=".BrowseActivity"
             android:parentActivityName=".MainActivity"

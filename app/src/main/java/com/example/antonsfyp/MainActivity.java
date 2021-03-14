@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void moveToBrowseMenu(View view) {
         Intent intent = new Intent (this, BrowseActivity.class);
+        intent.putExtra("EXTRA_SEARCH_TERMS", "*");
         startActivity(intent);
     }
 }

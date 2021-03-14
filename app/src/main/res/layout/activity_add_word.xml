@@ -15,66 +15,27 @@
         android:text="@string/add_word_button"
         android:textAlignment="center"
         android:textSize="36sp"
-        android:textStyle="bold"
+        android:textStyle="bold|italic"
         app:layout_constraintBottom_toTopOf="@+id/editWordName"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintHorizontal_bias="0.24"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.268" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <EditText
         android:id="@+id/editWordName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="108dp"
+        android:layout_marginTop="320dp"
         android:ems="10"
         android:hint="@string/enter_word_button"
+        android:importantForAutofill="no"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:importantForAutofill="no" />
-
-    <EditText
-        android:id="@+id/editWordDesc"
-        android:layout_width="305dp"
-        android:layout_height="135dp"
-        android:layout_marginTop="64dp"
-        android:ems="10"
-        android:gravity="start|top"
-        android:hint="@string/enter_definition_button"
-        android:inputType="textMultiLine"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editWordName"
-        android:importantForAutofill="no" />
-
-    <Button
-        android:id="@+id/button"
-        android:layout_width="130dp"
-        android:layout_height="75dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="76dp"
-        android:layout_marginEnd="16dp"
-        android:onClick="chooseVideoFromGallery"
-        android:text="@string/select_gallery_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.044"
-        app:layout_constraintStart_toEndOf="@+id/imageButton"
-        app:layout_constraintTop_toBottomOf="@+id/editWordDesc" />
-
-    <ImageButton
-        android:id="@+id/imageButton"
-        android:layout_width="85dp"
-        android:layout_height="75dp"
-        android:layout_marginStart="88dp"
-        android:layout_marginTop="76dp"
-        android:contentDescription="@string/camera_icon"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editWordDesc"
-        app:srcCompat="@android:drawable/ic_menu_camera" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/wordSubmit"
@@ -86,7 +47,7 @@
         android:focusable="true"
         android:onClick="addWordToDB"
         android:tint="#00FFFFFF"
-        app:backgroundTint="#4CAF50"
+        app:backgroundTint="@color/colorAccent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@android:drawable/ic_menu_send" />

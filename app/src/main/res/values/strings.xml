@@ -7,9 +7,11 @@
     <string name="profile_button">Profile</string>
     <string name="add_word_button">Add Word/Phrase</string>
     <string name="enter_word_button">Enter Word/Phrase</string>
-    <string name="enter_definition_button">Enter Defintion</string>
+    <string name="enter_definition_button">Enter Definition</string>
     <string name="select_gallery_button">Select Video From Gallery</string>
     <string name="camera_icon">Camera Icon</string>
     <string name="word_preview_title">Word/Phrase</string>
     <string name="definition_title">Definition</string>
+    <string name="add_video_title">Select a Video</string>
+    <string name="logo">BSL4Kids logo</string>
 </resources>
