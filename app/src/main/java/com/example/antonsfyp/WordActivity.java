@@ -6,9 +6,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,6 +45,17 @@ public class WordActivity extends AppCompatActivity {
         setContentView(R.layout.activity_word);
         wordName = getIntent().getStringExtra("EXTRA_WORD_NAME");
         new WordTask().execute();
+    }
+
+    //Takes user to edit description (not the word name itself)
+    //TODO add support for multiple videos per word
+    //TODO allow tag editing
+    public void editWord(View view) {
+        Intent intent = new Intent (this, AddDescActivity.class);
+        intent.putExtra("TYPE", "edit");
+        intent.putExtra("WORD_NAME" , wordName);
+        intent.putExtra("CURRENT_DESC" , word.getDefinition());
+        startActivity(intent);
     }
 
     public class WordTask extends AsyncTask<String, String, String> {
@@ -140,7 +153,7 @@ public class WordActivity extends AppCompatActivity {
 
                 // Extract data from json and store into Word object
                 JSONObject json_data = jArray.getJSONObject(0);
-                Word word = new Word("null", "null", "null");
+                word = new Word("null", "null", "null");
 
                 word.setName(json_data.getString("WordName"));
                 word.setDefinition(json_data.getString("Definition"));
