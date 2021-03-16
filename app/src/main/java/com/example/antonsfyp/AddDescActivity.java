@@ -59,6 +59,7 @@ public class AddDescActivity extends AppCompatActivity {
             Intent intent = new Intent (this, AddVideoActivity.class);
             intent.putExtra("WORD_NAME",wordName);
             intent.putExtra("WORD_DESC",descInput);
+            intent.putExtra("TYPE",type);
             startActivity(intent);
         }
         else {
@@ -66,7 +67,6 @@ public class AddDescActivity extends AppCompatActivity {
         }
     }
 
-    //TODO deprecate this class once users can upload multiple videos per word
     public class EditTask extends AsyncTask<String, String, String> {
 
         ProgressDialog pdLoading = new ProgressDialog(AddDescActivity.this);

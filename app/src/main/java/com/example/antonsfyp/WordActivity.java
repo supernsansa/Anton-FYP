@@ -16,6 +16,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.ui.StyledPlayerView;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,6 +34,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WordActivity extends AppCompatActivity {
 
@@ -38,23 +44,46 @@ public class WordActivity extends AppCompatActivity {
     public static final int CONNECTION_TIMEOUT = 10000;
     public static final int READ_TIMEOUT = 15000;
     private Word word;
+    private List<Video> videoList = new ArrayList<>();
+    private SimpleExoPlayer player;
+    private String searchTerms;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_word);
         wordName = getIntent().getStringExtra("EXTRA_WORD_NAME");
+        searchTerms = getIntent().getStringExtra("EXTRA_SEARCH_TERMS");
         new WordTask().execute();
     }
 
+    //Take user back to a refreshed BrowseActivity if back button is pressed.
+    @Override
+    public void onBackPressed() {
+        player.release();
+        Intent intent = new Intent (this, BrowseActivity.class);
+        intent.putExtra("EXTRA_SEARCH_TERMS",searchTerms);
+        startActivity(intent);
+        finish();
+    }
+
     //Takes user to edit description (not the word name itself)
-    //TODO add support for multiple videos per word
     //TODO allow tag editing
     public void editWord(View view) {
         Intent intent = new Intent (this, AddDescActivity.class);
         intent.putExtra("TYPE", "edit");
         intent.putExtra("WORD_NAME" , wordName);
         intent.putExtra("CURRENT_DESC" , word.getDefinition());
+        startActivity(intent);
+    }
+
+    //Takes user to add video
+    public void addVideo(View view) {
+        Intent intent = new Intent (this, AddVideoActivity.class);
+        intent.putExtra("TYPE", "edit");
+        intent.putExtra("WORD_NAME" , wordName);
+        intent.putExtra("CURRENT_DESC" , word.getDefinition());
+        intent.putExtra("NUM_VIDEOS" , videoList.size());
         startActivity(intent);
     }
 
@@ -166,21 +195,162 @@ public class WordActivity extends AppCompatActivity {
                 wordDef.setText(word.getDefinition());
                 TextView dateUploaded = (TextView) findViewById(R.id.DateText);
                 dateUploaded.setText(word.getDateAdded());
+
+                /**
                 //Load in video
                 VideoView videoView = (VideoView) findViewById(R.id.videoView);
                 MediaController mediacontroller = new MediaController(WordActivity.this);
                 mediacontroller.setAnchorView(videoView);
-                String uriPath = ("http://192.168.1.173:8080/FYP_Scripts/Videos/" + word.getName() + ".mp4");
-                Uri uri = Uri.parse(uriPath);
                 videoView.setMediaController(mediacontroller);
                 videoView.setVideoURI(uri);
                 videoView.requestFocus();
                 videoView.start();
+                 */
+
+                //Move to VideoTask
+                new VideoTask().execute();
+
+                /** String uriPath = ("http://192.168.1.173:8080/FYP_Scripts/Videos/" + word.getName() + ".mp4");
+                Uri uri = Uri.parse(uriPath);
+                //Make instance of exoplayer
+                SimpleExoPlayer player = new SimpleExoPlayer.Builder(WordActivity.this).build();
+                // Bind the player to the view.
+                StyledPlayerView playerView = (StyledPlayerView) findViewById(R.id.playerView);
+                playerView.setPlayer(player);
+                // Build the media item.
+                MediaItem mediaItem = MediaItem.fromUri(uri);
+                // Set the media item to be played.
+                player.setMediaItem(mediaItem);
+                // Prepare the player.
+                player.prepare();
+                // Start the playback.
+                player.play();
+                 */
 
             } catch (JSONException e) {
                 Toast.makeText(WordActivity.this, e.toString(), Toast.LENGTH_LONG).show();
             }
 
+        }
+    }
+
+    //This task fetches the filenames of all videos associated with a word and adds these videos to the exoplayer playlist
+    public class VideoTask extends AsyncTask<String, String, String> {
+
+        Context context;
+        ProgressDialog pdLoading = new ProgressDialog(WordActivity.this);
+        HttpURLConnection conn;
+        URL url = null;
+
+        @Override
+        protected String doInBackground(String... strings) {
+            try {
+
+                // Enter URL address where your json file resides
+                // Even you can make call to php file which returns json data
+                url = new URL("http://192.168.1.173:8080/FYP_Scripts/fetchVideos.php");
+
+            } catch (MalformedURLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                return e.toString();
+            }
+
+            try {
+
+                // Setup HttpURLConnection class to send and receive data from php and mysql
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(15000);
+                conn.setConnectTimeout(10000);
+
+                // setDoOutput to true as we receive data from json file
+                conn.setDoOutput(true);
+
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+                return e1.toString();
+            }
+
+            try {
+                //Encode data to post
+                String post_data = URLEncoder.encode("wordName", "UTF-8") + "=" + URLEncoder.encode(wordName, "UTF-8");
+
+                //Send encoded data
+                OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+
+                wr.write(post_data);
+                wr.flush();
+
+                // Read data sent from server
+                InputStream input = conn.getInputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+                StringBuilder result = new StringBuilder();
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+                    result.append(line);
+                }
+
+                System.out.println(result);
+
+                // Pass data to onPostExecute method
+                return (result.toString());
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                return e.toString();
+            } finally {
+                conn.disconnect();
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+            //this method will be running on UI thread
+
+            pdLoading.dismiss();
+
+            pdLoading.dismiss();
+            try {
+                JSONArray jArray = new JSONArray(result);
+
+                // Extract data from json and store into Video objects
+                for(int i=0;i<jArray.length();i++) {
+                    JSONObject json_data = jArray.getJSONObject(i);
+                    Video video = new Video("null","null","null","null");
+                    video.setWord(json_data.getString("Word"));
+                    video.setFileName(json_data.getString("FileName"));
+                    video.setDateUploaded(json_data.getString("DateUploaded"));
+                    video.setUserName(json_data.getString("User"));
+                    videoList.add(video);
+                }
+
+                //Make instance of exoplayer
+                player = new SimpleExoPlayer.Builder(WordActivity.this).build();
+                // Bind the player to the view.
+                StyledPlayerView playerView = (StyledPlayerView) findViewById(R.id.playerView);
+                playerView.setPlayer(player);
+
+                // Loop through videos and add to exoplayer playlist
+                for (Video video: videoList) {
+                    String uriPath = ("http://192.168.1.173:8080/FYP_Scripts/Videos/" + video.getFileName() + ".mp4");
+                    Uri uri = Uri.parse(uriPath);
+                    // Build the media item.
+                    MediaItem mediaItem = MediaItem.fromUri(uri);
+                    // Set the media item to be played.
+                    player.addMediaItem(mediaItem);
+                }
+
+                // Prepare the player.
+                player.prepare();
+                // Start the playback.
+                //player.play();
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

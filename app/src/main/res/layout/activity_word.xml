@@ -18,16 +18,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <VideoView
-        android:id="@+id/videoView"
-        android:layout_width="226dp"
-        android:layout_height="382dp"
-        android:layout_marginTop="44dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/WordNameText" />
-
     <EditText
         android:id="@+id/DefinitionText"
         android:layout_width="360dp"
@@ -48,15 +38,12 @@
         android:id="@+id/DateText"
         android:layout_width="116dp"
         android:layout_height="23dp"
-        android:layout_marginTop="6dp"
         android:layout_marginEnd="44dp"
-        android:text="@string/word_preview_title"
+        android:text="@string/upload_date"
         android:textAlignment="center"
         android:textSize="12sp"
         app:layout_constraintBottom_toTopOf="@+id/DefinitionText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/videoView"
-        app:layout_constraintVertical_bias="0.263" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/editButton"
@@ -65,9 +52,32 @@
         android:layout_marginTop="4dp"
         android:onClick="editWord"
         android:text="@string/edit_button"
-        app:layout_constraintBottom_toTopOf="@+id/videoView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.961"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/WordNameText" />
+
+    <Button
+        android:id="@+id/addVideoButton"
+        android:layout_width="133dp"
+        android:layout_height="46dp"
+        android:layout_marginTop="4dp"
+        android:onClick="addVideo"
+        android:text="@string/add_video_button"
+        app:layout_constraintEnd_toStartOf="@+id/editButton"
+        app:layout_constraintHorizontal_bias="0.935"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/WordNameText" />
+
+    <!--Widget for exoplayer view-->
+    <com.google.android.exoplayer2.ui.StyledPlayerView
+        android:id="@+id/playerView"
+        android:layout_width="327dp"
+        android:layout_height="383dp"
+        app:layout_constraintBottom_toTopOf="@+id/DateText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addVideoButton"
+        app:layout_constraintVertical_bias="0.45" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

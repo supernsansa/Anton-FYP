@@ -73,7 +73,9 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
         final String wordName = data.get(position).getName();
         Intent intent = new Intent(this, WordActivity.class);
         intent.putExtra("EXTRA_WORD_NAME", wordName);
+        intent.putExtra("EXTRA_SEARCH_TERMS",searchTerms);
         startActivity(intent);
+        finish();
     }
 
     public class FetchTask extends AsyncTask<String, String, String> {

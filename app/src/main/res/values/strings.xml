@@ -15,4 +15,6 @@
     <string name="add_video_title">Select a Video</string>
     <string name="logo">BSL4Kids logo</string>
     <string name="edit_button">EDIT</string>
+    <string name="add_video_button">Add a Video</string>
+    <string name="upload_date">Upload Date</string>
 </resources>

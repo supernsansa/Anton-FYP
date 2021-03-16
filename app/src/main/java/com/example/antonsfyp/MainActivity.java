@@ -9,6 +9,7 @@ import android.view.View;
 public class MainActivity extends AppCompatActivity {
 
     //TODO Redo buttons and colour scheme
+    //TODO ACCOUNT SYSTEM
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void moveToBrowseMenu(View view) {
         Intent intent = new Intent (this, BrowseActivity.class);
+        //TODO: In later version pass on login details for POST request to db
         intent.putExtra("EXTRA_SEARCH_TERMS", "*");
         startActivity(intent);
     }

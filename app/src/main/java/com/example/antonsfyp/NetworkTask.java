@@ -77,6 +77,7 @@ public class NetworkTask extends AsyncTask<String, Void, String> {
     protected void onPostExecute(String o) {
         alertDialog.setMessage(o);
         alertDialog.show();
+        System.out.println(o);
     }
 
     @Override
