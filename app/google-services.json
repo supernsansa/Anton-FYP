@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "975304368767",
+    "project_id": "bsl4kids-4346d",
+    "storage_bucket": "bsl4kids-4346d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:975304368767:android:6f7a0efdea4ab19de2554a",
+        "android_client_info": {
+          "package_name": "com.example.antonsfyp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "975304368767-iourtm2u2j54ad27n57fucp2oc1c9gi0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYqDRpJflslPVuav9MqvNe-BRIXdHs7kU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "975304368767-iourtm2u2j54ad27n57fucp2oc1c9gi0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

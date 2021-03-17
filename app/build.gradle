@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'com.google.gms.google-services'
+
 
 android {
     compileSdkVersion 30
@@ -63,6 +65,9 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer-core:2.13.2'
     implementation 'com.google.android.exoplayer:exoplayer-dash:2.13.2'
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.13.2'
+
+    implementation platform('com.google.firebase:firebase-bom:26.7.0')
+    implementation 'com.google.firebase:firebase-analytics'
 
 
 }

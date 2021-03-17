@@ -17,4 +17,11 @@
     <string name="edit_button">EDIT</string>
     <string name="add_video_button">Add a Video</string>
     <string name="upload_date">Upload Date</string>
+    <string name="login_title">Login</string>
+    <string name="email_title">Email</string>
+    <string name="password_title">Password</string>
+    <string name="login_button">Login</string>
+    <string name="register_button">Register</string>
+    <string name="register_title">Register</string>
+    <string name="username_title">Username</string>
 </resources>
