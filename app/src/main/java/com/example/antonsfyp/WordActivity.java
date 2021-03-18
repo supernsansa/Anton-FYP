@@ -75,6 +75,7 @@ public class WordActivity extends AppCompatActivity {
         intent.putExtra("WORD_NAME" , wordName);
         intent.putExtra("CURRENT_DESC" , word.getDefinition());
         startActivity(intent);
+        //Ayy
     }
 
     //Takes user to add video
