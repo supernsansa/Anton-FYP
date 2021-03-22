@@ -342,6 +342,8 @@ public class WordActivity extends AppCompatActivity {
                     MediaItem mediaItem = MediaItem.fromUri(uri);
                     // Set the media item to be played.
                     player.addMediaItem(mediaItem);
+                    //Mute the player
+                    player.setVolume(0f);
                 }
 
                 // Prepare the player.
