@@ -32,6 +32,8 @@ public class AddDescActivity extends AppCompatActivity {
     private String current_desc;
     private EditText editWordDesc;
     private String descInput;
+    private boolean login_status = false;
+    private String username = "null";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +41,11 @@ public class AddDescActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_desc);
         type = getIntent().getStringExtra("TYPE");
         wordName = getIntent().getStringExtra("WORD_NAME");
+
+        login_status = getIntent().getBooleanExtra("LOGIN_STATUS",false);
+        if(login_status == true) {
+            username = getIntent().getStringExtra("USERNAME");
+        }
 
         if(type.equals("edit")) {
             current_desc = getIntent().getStringExtra("CURRENT_DESC");
@@ -60,6 +67,8 @@ public class AddDescActivity extends AppCompatActivity {
             intent.putExtra("WORD_NAME",wordName);
             intent.putExtra("WORD_DESC",descInput);
             intent.putExtra("TYPE",type);
+            intent.putExtra("USERNAME", username);
+            intent.putExtra("LOGIN_STATUS", login_status);
             startActivity(intent);
         }
         else {
@@ -151,6 +160,7 @@ public class AddDescActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result) {
+            pdLoading.dismiss();
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AddDescActivity.this);
             alertDialogBuilder.setTitle("Status:");
             alertDialogBuilder.setMessage(result);
@@ -162,6 +172,8 @@ public class AddDescActivity extends AppCompatActivity {
                 public void onClick(DialogInterface arg0, int arg1) {
                     //Take user back to main menu
                     Intent intent = new Intent(AddDescActivity.this , MainActivity.class);
+                    intent.putExtra("USERNAME", username);
+                    intent.putExtra("LOGIN_STATUS", login_status);
                     startActivity(intent);
                 }
             });

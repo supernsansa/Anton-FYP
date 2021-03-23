@@ -33,11 +33,18 @@ public class AddWordActivity extends AppCompatActivity {
     private String selectedPath = "";
     private static Intent VideoFileData;
     private String wordName = "";
+    private boolean login_status = false;
+    private String username = "null";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_word);
+
+        login_status = getIntent().getBooleanExtra("LOGIN_STATUS",false);
+        if(login_status == true) {
+            username = getIntent().getStringExtra("USERNAME");
+        }
     }
 
     //Takes user input and adds a word entry to database
@@ -161,6 +168,8 @@ public class AddWordActivity extends AppCompatActivity {
                 Intent intent = new Intent (AddWordActivity.this, AddDescActivity.class);
                 intent.putExtra("TYPE","add");
                 intent.putExtra("WORD_NAME",wordName);
+                intent.putExtra("USERNAME", username);
+                intent.putExtra("LOGIN_STATUS", login_status);
                 startActivity(intent);
             }
             else {

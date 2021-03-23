@@ -38,14 +38,16 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
     private WordPreviewAdapter wordPreviewAdapter;
     private String searchTerms;
     List<WordPreview> data = new ArrayList<>();
+    private boolean login_status = false;
+    private String username = "null";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browse);
-        new FetchTask().execute();
 
         searchTerms = getIntent().getStringExtra("EXTRA_SEARCH_TERMS");
+        new FetchTask().execute();
 
         SearchView searchView = findViewById(R.id.BrowseSearch);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -64,6 +66,11 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
                 return false;
             }
         });
+
+        login_status = getIntent().getBooleanExtra("LOGIN_STATUS",false);
+        if(login_status == true) {
+            username = getIntent().getStringExtra("USERNAME");
+        }
     }
 
     //Takes user to word page when word is tapped
@@ -74,6 +81,8 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
         Intent intent = new Intent(this, WordActivity.class);
         intent.putExtra("EXTRA_WORD_NAME", wordName);
         intent.putExtra("EXTRA_SEARCH_TERMS",searchTerms);
+        intent.putExtra("USERNAME", username);
+        intent.putExtra("LOGIN_STATUS", login_status);
         startActivity(intent);
         finish();
     }

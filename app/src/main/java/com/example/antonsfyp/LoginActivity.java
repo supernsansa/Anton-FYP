@@ -33,8 +33,6 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
     }
 
-    //TODO Login method and ASyncTask
-
     public void moveToRegisterMenu(View view) {
         Intent intent = new Intent (this, RegisterActivity.class);
         startActivity(intent);

@@ -7,10 +7,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,6 +50,8 @@ public class WordActivity extends AppCompatActivity {
     private List<Video> videoList = new ArrayList<>();
     private SimpleExoPlayer player;
     private String searchTerms;
+    private boolean login_status = false;
+    private String username = "null";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +59,24 @@ public class WordActivity extends AppCompatActivity {
         setContentView(R.layout.activity_word);
         wordName = getIntent().getStringExtra("EXTRA_WORD_NAME");
         searchTerms = getIntent().getStringExtra("EXTRA_SEARCH_TERMS");
+
+        //If user has logged in/registered, get their status and user name
+        login_status = getIntent().getBooleanExtra("LOGIN_STATUS",false);
+        if(login_status == true) {
+            username = getIntent().getStringExtra("USERNAME");
+        }
+        //If user isn't logged in, edit and add video buttons should be restricted
+        else {
+            //Disable and gray out Edit button
+            Button editButton = (Button) findViewById(R.id.editButton);
+            editButton.getBackground().setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
+            editButton.setClickable(false);
+            //Disable and gray out Add Video button
+            Button addVidButton = (Button) findViewById(R.id.addVideoButton);
+            addVidButton.getBackground().setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
+            addVidButton.setClickable(false);
+        }
+
         new WordTask().execute();
     }
 
@@ -74,6 +97,8 @@ public class WordActivity extends AppCompatActivity {
         intent.putExtra("TYPE", "edit");
         intent.putExtra("WORD_NAME" , wordName);
         intent.putExtra("CURRENT_DESC" , word.getDefinition());
+        intent.putExtra("USERNAME", username);
+        intent.putExtra("LOGIN_STATUS", login_status);
         startActivity(intent);
         //Ayy
     }
@@ -85,6 +110,8 @@ public class WordActivity extends AppCompatActivity {
         intent.putExtra("WORD_NAME" , wordName);
         intent.putExtra("CURRENT_DESC" , word.getDefinition());
         intent.putExtra("NUM_VIDEOS" , videoList.size());
+        intent.putExtra("USERNAME", username);
+        intent.putExtra("LOGIN_STATUS", login_status);
         startActivity(intent);
     }
 

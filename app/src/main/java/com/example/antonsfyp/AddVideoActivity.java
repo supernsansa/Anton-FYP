@@ -32,6 +32,9 @@ public class AddVideoActivity extends AppCompatActivity {
     private String type;
     private int vidIndex;
     private String filename;
+    private boolean login_status = false;
+    private String username = "null";
+    UploadUtility uploadUtility;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,11 +43,18 @@ public class AddVideoActivity extends AppCompatActivity {
         wordName = getIntent().getStringExtra("WORD_NAME");
         wordDesc = getIntent().getStringExtra("WORD_DESC");
         type = getIntent().getStringExtra("TYPE");
+        uploadUtility = new UploadUtility(this);
+
+        login_status = getIntent().getBooleanExtra("LOGIN_STATUS",false);
+        if(login_status == true) {
+            username = getIntent().getStringExtra("USERNAME");
+        }
 
         if (type.equals("edit")) {
             TextView textView = (TextView) findViewById(R.id.addVideoTitle);
             textView.setText("Add a Video");
             vidIndex = getIntent().getIntExtra("NUM_VIDEOS",0);
+            //TODO change filename system to wordID+vidIndex.mp4
             filename = wordName + String.valueOf(vidIndex);
         }
 
@@ -67,25 +77,18 @@ public class AddVideoActivity extends AppCompatActivity {
     //TODO Display video preview
 
     public void uploadData(View view) {
-        //TODO change below to support multiple videos per word in db
-        UploadUtility uploadUtility = new UploadUtility(this);
         if (type.equals("add")) {
             //Upload video
+            //TODO change filename system to wordID.mp4
             uploadUtility.uploadFile(VideoFileData.getData(),(wordName + ".mp4"));
             //Create NetworkTask instance
-            //TODO change line below
             String type = "AddWord";
             NetworkTask task = new NetworkTask(this);
-            task.execute(type,wordName,wordDesc);
+            task.execute(type,wordName,wordDesc,username);
         }
         else {
-            uploadUtility.uploadFile(VideoFileData.getData(),(filename + ".mp4"));
             new AddVideoTask().execute();
         }
-
-        //Take user back to main menu
-        Intent intent = new Intent (this, MainActivity.class);
-        startActivity(intent);
     }
 
     //Opens a thread to upload a video and create an entry into the videodb
@@ -139,7 +142,8 @@ public class AddVideoActivity extends AppCompatActivity {
             try {
                 //Encode data to post TODO pass username
                 String post_data = URLEncoder.encode("wordName", "UTF-8") + "=" + URLEncoder.encode(wordName, "UTF-8")+"&"
-                        +URLEncoder.encode("fileName","UTF-8")+"="+URLEncoder.encode(filename,"UTF-8");
+                        +URLEncoder.encode("fileName","UTF-8")+"="+URLEncoder.encode(filename,"UTF-8")+"&"
+                        +URLEncoder.encode("userName","UTF-8")+"="+URLEncoder.encode(username,"UTF-8");
 
                 //Send encoded data
                 OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
@@ -166,25 +170,38 @@ public class AddVideoActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
                 return e.toString();
-            } finally {
+            }
+            finally {
                 conn.disconnect();
             }
         }
 
         @Override
         protected void onPostExecute(String result) {
+            pdLoading.dismiss();
+
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AddVideoActivity.this);
             alertDialogBuilder.setTitle("Status:");
             alertDialogBuilder.setMessage(result);
             alertDialogBuilder.setCancelable(false);
 
+            final String response = result;
+            System.out.println(response);
+
             alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 
                 @Override
                 public void onClick(DialogInterface arg0, int arg1) {
+                    if(response.equals("Video entry created")) {
+                        System.out.println("Got here");
+                        uploadUtility.uploadFile(VideoFileData.getData(),(filename + ".mp4"));
+                    }
                     //Take user back to main menu
                     Intent intent = new Intent(AddVideoActivity.this , MainActivity.class);
+                    intent.putExtra("USERNAME", username);
+                    intent.putExtra("LOGIN_STATUS", login_status);
                     startActivity(intent);
+                    finish();
                 }
             });
 

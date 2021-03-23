@@ -2,6 +2,7 @@ package com.example.antonsfyp;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 
 import java.io.BufferedReader;
@@ -30,6 +31,7 @@ public class NetworkTask extends AsyncTask<String, Void, String> {
         String type = objects[0];
         String wordName = objects[1];
         String wordDesc = objects[2];
+        String username = objects[3];
         String login_url = "http://192.168.1.173:8080/FYP_Scripts/addWord.php";
 
         if(type.equals("AddWord")) {
@@ -37,7 +39,8 @@ public class NetworkTask extends AsyncTask<String, Void, String> {
 
                 //Input data to post
                 String post_data = URLEncoder.encode("wordName","UTF-8")+"="+URLEncoder.encode(wordName,"UTF-8")+"&"
-                        +URLEncoder.encode("wordDesc","UTF-8")+"="+URLEncoder.encode(wordDesc,"UTF-8");
+                        +URLEncoder.encode("wordDesc","UTF-8")+"="+URLEncoder.encode(wordDesc,"UTF-8")+"&"
+                        +URLEncoder.encode("userName","UTF-8")+"="+URLEncoder.encode(username,"UTF-8");
 
                 //Post input data to PHP script
                 URL url = new URL(login_url);
@@ -75,15 +78,18 @@ public class NetworkTask extends AsyncTask<String, Void, String> {
 
     @Override
     protected void onPostExecute(String o) {
-        alertDialog.setMessage(o);
-        alertDialog.show();
+        //alertDialog.setMessage(o);
+        //alertDialog.show();
         System.out.println(o);
+        //Take user back to main menu
+        Intent intent = new Intent (context, MainActivity.class);
+        context.startActivity(intent);
     }
 
     @Override
     protected void onPreExecute() {
-        alertDialog = new AlertDialog.Builder(context).create();
-        alertDialog.setTitle("Status");
+        //alertDialog = new AlertDialog.Builder(context).create();
+        //alertDialog.setTitle("Status");
     }
 
 }
