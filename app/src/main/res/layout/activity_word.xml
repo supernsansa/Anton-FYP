@@ -1,83 +1,174 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/VideoFrame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".WordActivity">
+    android:fillViewport="true">
 
-    <TextView
-        android:id="@+id/WordNameText"
-        android:layout_width="382dp"
-        android:layout_height="43dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/word_preview_title"
-        android:textSize="24sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/VideoFrame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context=".WordActivity"
+        android:fillViewport="true">
 
-    <EditText
-        android:id="@+id/DefinitionText"
-        android:layout_width="360dp"
-        android:layout_height="180dp"
-        android:layout_marginBottom="16dp"
-        android:ems="10"
-        android:focusable="false"
-        android:gravity="start|top"
-        android:importantForAutofill="no"
-        android:inputType="none"
-        android:text="@string/word_preview_title"
-        android:textAlignment="textStart"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        <Button
+            android:id="@+id/addTagButton"
+            android:layout_width="119dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="4dp"
+            android:text="@string/add_tag"
+            app:layout_constraintEnd_toStartOf="@+id/addVideoButton"
+            app:layout_constraintHorizontal_bias="0.7"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/WordNameText" />
 
-    <TextView
-        android:id="@+id/DateText"
-        android:layout_width="116dp"
-        android:layout_height="23dp"
-        android:layout_marginEnd="44dp"
-        android:text="@string/upload_date"
-        android:textAlignment="center"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toTopOf="@+id/DefinitionText"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <Button
+            android:id="@+id/tag3"
+            android:layout_width="115dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="20dp"
+            android:text="@string/tag_button"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tag0"
+            app:layout_constraintVertical_bias="0.0" />
 
-    <Button
-        android:id="@+id/editButton"
-        android:layout_width="67dp"
-        android:layout_height="46dp"
-        android:layout_marginTop="4dp"
-        android:onClick="editWord"
-        android:text="@string/edit_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.961"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/WordNameText" />
+        <Button
+            android:id="@+id/tag4"
+            android:layout_width="115dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="20dp"
+            android:text="@string/tag_button"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tag3"
+            app:layout_constraintTop_toBottomOf="@+id/tag1"
+            app:layout_constraintVertical_bias="0.0" />
 
-    <Button
-        android:id="@+id/addVideoButton"
-        android:layout_width="133dp"
-        android:layout_height="46dp"
-        android:layout_marginTop="4dp"
-        android:onClick="addVideo"
-        android:text="@string/add_video_button"
-        app:layout_constraintEnd_toStartOf="@+id/editButton"
-        app:layout_constraintHorizontal_bias="0.935"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/WordNameText" />
+        <Button
+            android:id="@+id/tag5"
+            android:layout_width="115dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="20dp"
+            android:text="@string/tag_button"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tag4"
+            app:layout_constraintTop_toBottomOf="@+id/tag2"
+            app:layout_constraintVertical_bias="0.0" />
 
-    <!--Widget for exoplayer view-->
-    <com.google.android.exoplayer2.ui.StyledPlayerView
-        android:id="@+id/playerView"
-        android:layout_width="327dp"
-        android:layout_height="383dp"
-        app:layout_constraintBottom_toTopOf="@+id/DateText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addVideoButton"
-        app:layout_constraintVertical_bias="0.45" />
+        <Button
+            android:id="@+id/tag0"
+            android:layout_width="115dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/tag_button"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tagTitle" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <Button
+            android:id="@+id/tag1"
+            android:layout_width="115dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/tag_button"
+            app:layout_constraintStart_toEndOf="@+id/tag0"
+            app:layout_constraintTop_toBottomOf="@+id/tagTitle" />
+
+        <Button
+            android:id="@+id/tag2"
+            android:layout_width="115dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/tag_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/tag1"
+            app:layout_constraintTop_toBottomOf="@+id/tagTitle" />
+
+        <TextView
+            android:id="@+id/WordNameText"
+            android:layout_width="382dp"
+            android:layout_height="43dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/word_preview_title"
+            android:textSize="24sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!--Widget for exoplayer view-->
+
+        <Button
+            android:id="@+id/editButton"
+            android:layout_width="67dp"
+            android:layout_height="46dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="24dp"
+            android:onClick="editWord"
+            android:text="@string/edit_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/WordNameText" />
+
+        <Button
+            android:id="@+id/addVideoButton"
+            android:layout_width="133dp"
+            android:layout_height="46dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="20dp"
+            android:onClick="addVideo"
+            android:text="@string/add_video_button"
+            app:layout_constraintEnd_toStartOf="@+id/editButton"
+            app:layout_constraintTop_toBottomOf="@+id/WordNameText" />
+
+        <com.google.android.exoplayer2.ui.StyledPlayerView
+            android:id="@+id/playerView"
+            android:layout_width="327dp"
+            android:layout_height="383dp"
+            android:layout_marginTop="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/addVideoButton" />
+
+        <TextView
+            android:id="@+id/DescText"
+            android:layout_width="330dp"
+            android:layout_height="162dp"
+            android:layout_marginTop="12dp"
+            android:text="@string/placeholder_def"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/playerView" />
+
+        <TextView
+            android:id="@+id/tagTitle"
+            android:layout_width="183dp"
+            android:layout_height="42dp"
+            android:layout_marginStart="28dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/tag_title"
+            android:textSize="24sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/DescText" />
+
+        <TextView
+            android:id="@+id/paddingSpace"
+            android:layout_width="0dp"
+            android:layout_height="26dp"
+            android:layout_marginBottom="24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tag4"
+            app:layout_constraintVertical_bias="1.0" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

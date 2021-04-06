@@ -12,6 +12,7 @@ import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.MediaController;
@@ -219,10 +220,11 @@ public class WordActivity extends AppCompatActivity {
                 //Place text in appropriate UI elements
                 TextView wordTitle = (TextView) findViewById(R.id.WordNameText);
                 wordTitle.setText(word.getName());
-                TextView wordDef = (TextView) findViewById(R.id.DefinitionText);
+                TextView wordDef = (TextView) findViewById(R.id.DescText);
+                wordDef.setMovementMethod(new ScrollingMovementMethod());
                 wordDef.setText(word.getDefinition());
-                TextView dateUploaded = (TextView) findViewById(R.id.DateText);
-                dateUploaded.setText(word.getDateAdded());
+                //TextView dateUploaded = (TextView) findViewById(R.id.DateText);
+                //dateUploaded.setText(word.getDateAdded());
 
                 /**
                 //Load in video

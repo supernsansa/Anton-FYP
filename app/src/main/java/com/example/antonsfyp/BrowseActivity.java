@@ -179,6 +179,7 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
             }
         }
 
+        //Request regular text search
         protected String getSearchResults() {
             try {
 

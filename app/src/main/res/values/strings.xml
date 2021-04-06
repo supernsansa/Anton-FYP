@@ -25,4 +25,8 @@
     <string name="register_title">Register</string>
     <string name="username_title">Username</string>
     <string name="login_button_false">Login/Register</string>
+    <string name="tag_title">Tags:</string>
+    <string name="tag_button">Tag</string>
+    <string name="placeholder_def">Definition</string>
+    <string name="add_tag">Add a Tag</string>
 </resources>
