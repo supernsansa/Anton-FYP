@@ -29,7 +29,9 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BrowseActivity extends AppCompatActivity implements OnItemClickListener {
+//Users can browse, tap, and search for tags on this screen
+//Made using retooled BrowseActivity code
+public class BrowseTagActivity extends AppCompatActivity implements OnItemClickListener {
 
     // CONNECTION_TIMEOUT and READ_TIMEOUT are in milliseconds
     public static final int CONNECTION_TIMEOUT = 10000;
@@ -40,8 +42,6 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
     List<WordPreview> data = new ArrayList<>();
     private boolean login_status = false;
     private String username = "null";
-    private boolean tag_search_status = false;
-    private String tagName = "null";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,14 +49,15 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
         setContentView(R.layout.activity_browse);
 
         searchTerms = getIntent().getStringExtra("EXTRA_SEARCH_TERMS");
-        new FetchTask().execute();
+        new BrowseTagActivity.FetchTask().execute();
 
         SearchView searchView = findViewById(R.id.BrowseSearch);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            //When users search on this screen, take them to another instance of this class with relevant search results
             @Override
             public boolean onQueryTextSubmit(String query) {
                 //Load in search results
-                Intent intent = new Intent (BrowseActivity.this, BrowseActivity.class);
+                Intent intent = new Intent (BrowseTagActivity.this, BrowseTagActivity.class);
                 intent.putExtra("EXTRA_SEARCH_TERMS", query);
                 intent.putExtra("USERNAME", username);
                 intent.putExtra("LOGIN_STATUS", login_status);
@@ -71,27 +72,20 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
             }
         });
 
-        //Get login status and (if true) the user's username
         login_status = getIntent().getBooleanExtra("LOGIN_STATUS",false);
         if(login_status == true) {
             username = getIntent().getStringExtra("USERNAME");
         }
-
-        //Check if this is from a tag click redirect, if so, get the tag name and disable the search bar
-        tag_search_status = getIntent().getBooleanExtra("TAG_SEARCH",false);
-        if(tag_search_status == true) {
-            tagName = getIntent().getStringExtra("EXTRA_TAG_NAME");
-            searchView.setVisibility(View.GONE);
-        }
     }
 
-    //Takes user to word page when word is tapped
+    //Takes user to list of relevant words when a tag is tapped
     @Override
     public void onClick(View view, int position) {
         // The onClick implementation of the RecyclerView item click
-        final String wordName = data.get(position).getName();
-        Intent intent = new Intent(this, WordActivity.class);
-        intent.putExtra("EXTRA_WORD_NAME", wordName);
+        final String tagName = data.get(position).getName();
+        Intent intent = new Intent(this, BrowseActivity.class);
+        intent.putExtra("TAG_SEARCH", true);
+        intent.putExtra("EXTRA_TAG_NAME", tagName);
         intent.putExtra("EXTRA_SEARCH_TERMS",searchTerms);
         intent.putExtra("USERNAME", username);
         intent.putExtra("LOGIN_STATUS", login_status);
@@ -99,10 +93,11 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
         finish();
     }
 
+    //Fetches all tag types from tagdb
     public class FetchTask extends AsyncTask<String, String, String> {
 
         Context context;
-        ProgressDialog pdLoading = new ProgressDialog(BrowseActivity.this);
+        ProgressDialog pdLoading = new ProgressDialog(BrowseTagActivity.this);
         HttpURLConnection conn;
         URL url = null;
 
@@ -117,19 +112,13 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
 
         }
 
-        //Select the relevant fetching method depending on circumstance
         @Override
         protected String doInBackground(String... strings) {
-            if (tag_search_status == true) {
-                return getTagWords();
+            if (searchTerms.equals("*")) {
+                return getAllWords();
             }
             else {
-                if (searchTerms.equals("*")) {
-                    return getAllWords();
-                }
-                else {
-                    return getSearchResults();
-                }
+                return getSearchResults();
             }
         }
 
@@ -139,7 +128,7 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
 
                 // Enter URL address where your json file resides
                 // Even you can make call to php file which returns json data
-                url = new URL("http://192.168.1.173:8080/FYP_Scripts/fetchWordBrowse.php");
+                url = new URL("http://192.168.1.173:8080/FYP_Scripts/fetchTagBrowse.php");
 
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
@@ -203,7 +192,7 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
 
                 // Enter URL address where your json file resides
                 // Even you can make call to php file which returns json data
-                url = new URL("http://192.168.1.173:8080/FYP_Scripts/searchDB.php");
+                url = new URL("http://192.168.1.173:8080/FYP_Scripts/searchTagDB.php");
 
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
@@ -229,70 +218,7 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
 
             try {
                 //Encode data to post
-                String post_data = URLEncoder.encode("wordName","UTF-8")+"="+URLEncoder.encode(searchTerms,"UTF-8");
-
-                //Send encoded data
-                OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-
-                wr.write(post_data);
-                wr.flush();
-
-                // Read data sent from server
-                InputStream input = conn.getInputStream();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-                StringBuilder result = new StringBuilder();
-                String line;
-
-                while ((line = reader.readLine()) != null) {
-                    result.append(line);
-                }
-
-                System.out.println(result);
-
-                // Pass data to onPostExecute method
-                return (result.toString());
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                return e.toString();
-            } finally {
-                conn.disconnect();
-            }
-        }
-
-        //Request regular text search
-        protected String getTagWords() {
-            try {
-
-                // Enter URL address where your json file resides
-                // Even you can make call to php file which returns json data
-                url = new URL("http://192.168.1.173:8080/FYP_Scripts/searchByTag.php");
-
-            } catch (MalformedURLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-                return e.toString();
-            }
-
-            try {
-
-                // Setup HttpURLConnection class to send and receive data from php and mysql
-                conn = (HttpURLConnection) url.openConnection();
-                conn.setReadTimeout(15000);
-                conn.setConnectTimeout(10000);
-
-                // setDoOutput to true as we receive data from json file
-                conn.setDoOutput(true);
-
-            } catch (IOException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-                return e1.toString();
-            }
-
-            try {
-                //Encode data to post
-                String post_data = URLEncoder.encode("tagName","UTF-8")+"="+URLEncoder.encode(tagName,"UTF-8");
+                String post_data = URLEncoder.encode("tagName","UTF-8")+"="+URLEncoder.encode(searchTerms,"UTF-8");
 
                 //Send encoded data
                 OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
@@ -340,21 +266,21 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
                     JSONObject json_data = jArray.getJSONObject(i);
                     WordPreview wordPreview = new WordPreview("null", "null");
 
-                    wordPreview.setName(json_data.getString("WordName"));
-                    wordPreview.setDefinition(json_data.getString("Definition"));
+                    wordPreview.setName(json_data.getString("TagName"));
+                    wordPreview.setDefinition("");
 
                     data.add(wordPreview);
                 }
 
                 // Setup and Handover data to recyclerview
                 browseTable = (RecyclerView) findViewById(R.id.wordTable);
-                wordPreviewAdapter = new WordPreviewAdapter(BrowseActivity.this, data);
-                wordPreviewAdapter.setClickListener(BrowseActivity.this); // Bind the listener
+                wordPreviewAdapter = new WordPreviewAdapter(BrowseTagActivity.this, data);
+                wordPreviewAdapter.setClickListener(BrowseTagActivity.this); // Bind the listener
                 browseTable.setAdapter(wordPreviewAdapter);
-                browseTable.setLayoutManager(new LinearLayoutManager(BrowseActivity.this));
+                browseTable.setLayoutManager(new LinearLayoutManager(BrowseTagActivity.this));
 
             } catch (JSONException e) {
-                Toast.makeText(BrowseActivity.this, e.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(BrowseTagActivity.this, e.toString(), Toast.LENGTH_LONG).show();
             }
 
             conn.disconnect();
@@ -362,5 +288,3 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
         }
     }
 }
-
-

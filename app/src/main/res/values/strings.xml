@@ -29,4 +29,6 @@
     <string name="tag_button">Tag</string>
     <string name="placeholder_def">Definition</string>
     <string name="add_tag">Add a Tag</string>
+    <string name="search_by_word">Search by Word/Phrase</string>
+    <string name="search_by_tag">Search by Tag</string>
 </resources>

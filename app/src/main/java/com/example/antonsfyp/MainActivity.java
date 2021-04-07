@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         return;
     }
 
-    //Takes user to add word/phrase screen when user taps relevant button
+    //Takes user to add word/phrase screen
     public void moveToAddMenu (View view) {
         Intent intent = new Intent (this, AddWordActivity.class);
         intent.putExtra("USERNAME", username);
@@ -53,11 +53,22 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    //Takes the user to the search by word/phrase screen
     public void moveToBrowseMenu(View view) {
         Intent intent = new Intent (this, BrowseActivity.class);
         intent.putExtra("USERNAME", username);
         intent.putExtra("LOGIN_STATUS", login_status);
-        //TODO change this when tags are implemented
+        intent.putExtra("EXTRA_SEARCH_TERMS", "*");
+        intent.putExtra("TAG_SEARCH", false);
+        startActivity(intent);
+    }
+
+    //Takes the user to the search by tag screen
+    public void moveToTagBrowseMenu(View view) {
+        //TODO change this to new browse tag activity
+        Intent intent = new Intent (this, BrowseTagActivity.class);
+        intent.putExtra("USERNAME", username);
+        intent.putExtra("LOGIN_STATUS", login_status);
         intent.putExtra("EXTRA_SEARCH_TERMS", "*");
         startActivity(intent);
     }
