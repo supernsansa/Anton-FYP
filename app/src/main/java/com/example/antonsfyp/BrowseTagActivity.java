@@ -42,6 +42,8 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
     List<WordPreview> data = new ArrayList<>();
     private boolean login_status = false;
     private String username = "null";
+    private boolean word_spec = false;
+    private String word_name = "null";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,9 +74,17 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
             }
         });
 
+        //Get login status and username
         login_status = getIntent().getBooleanExtra("LOGIN_STATUS",false);
         if(login_status == true) {
             username = getIntent().getStringExtra("USERNAME");
+        }
+
+        //Get word for which tags will be displayed and disable search bar
+        word_spec = getIntent().getBooleanExtra("WORD_SPEC",false);
+        if(word_spec == true) {
+            word_name = getIntent().getStringExtra("WORD_NAME");
+            searchView.setVisibility(View.GONE);
         }
     }
 
@@ -90,6 +100,10 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
         intent.putExtra("USERNAME", username);
         intent.putExtra("LOGIN_STATUS", login_status);
         startActivity(intent);
+    }
+
+    @Override
+    public void onBackPressed() {
         finish();
     }
 
@@ -116,6 +130,9 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
         protected String doInBackground(String... strings) {
             if (searchTerms.equals("*")) {
                 return getAllWords();
+            }
+            else if(word_spec == true) {
+                return getWordTags();
             }
             else {
                 return getSearchResults();
@@ -219,6 +236,69 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
             try {
                 //Encode data to post
                 String post_data = URLEncoder.encode("tagName","UTF-8")+"="+URLEncoder.encode(searchTerms,"UTF-8");
+
+                //Send encoded data
+                OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+
+                wr.write(post_data);
+                wr.flush();
+
+                // Read data sent from server
+                InputStream input = conn.getInputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+                StringBuilder result = new StringBuilder();
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+                    result.append(line);
+                }
+
+                System.out.println(result);
+
+                // Pass data to onPostExecute method
+                return (result.toString());
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                return e.toString();
+            } finally {
+                conn.disconnect();
+            }
+        }
+
+        //Request regular text search
+        protected String getWordTags() {
+            try {
+
+                // Enter URL address where your json file resides
+                // Even you can make call to php file which returns json data
+                url = new URL("http://192.168.1.173:8080/FYP_Scripts/fetchTagWord.php");
+
+            } catch (MalformedURLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                return e.toString();
+            }
+
+            try {
+
+                // Setup HttpURLConnection class to send and receive data from php and mysql
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(15000);
+                conn.setConnectTimeout(10000);
+
+                // setDoOutput to true as we receive data from json file
+                conn.setDoOutput(true);
+
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+                return e1.toString();
+            }
+
+            try {
+                //Encode data to post
+                String post_data = URLEncoder.encode("wordName","UTF-8")+"="+URLEncoder.encode(word_name,"UTF-8");
 
                 //Send encoded data
                 OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());

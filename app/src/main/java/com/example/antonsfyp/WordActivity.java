@@ -1,8 +1,6 @@
 package com.example.antonsfyp;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -15,10 +13,8 @@ import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
-import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -36,7 +32,6 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,24 +71,30 @@ public class WordActivity extends AppCompatActivity {
             Button addVidButton = (Button) findViewById(R.id.addVideoButton);
             addVidButton.getBackground().setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
             addVidButton.setClickable(false);
+            //Disable and gray out add tag button
+            Button addTagButton = (Button) findViewById(R.id.addTagButton);
+            addTagButton.getBackground().setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
+            addTagButton.setClickable(false);
         }
 
         new WordTask().execute();
     }
 
-    //Take user back to a refreshed BrowseActivity if back button is pressed.
     @Override
     public void onBackPressed() {
         player.release();
-        Intent intent = new Intent (this, BrowseActivity.class);
-        intent.putExtra("EXTRA_SEARCH_TERMS",searchTerms);
-        startActivity(intent);
         finish();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        new VideoTask().execute();
+    }
+
     //Takes user to edit description (not the word name itself)
-    //TODO allow tag editing
     public void editWord(View view) {
+        player.release();
         Intent intent = new Intent (this, AddDescActivity.class);
         intent.putExtra("TYPE", "edit");
         intent.putExtra("WORD_NAME" , wordName);
@@ -101,11 +102,11 @@ public class WordActivity extends AppCompatActivity {
         intent.putExtra("USERNAME", username);
         intent.putExtra("LOGIN_STATUS", login_status);
         startActivity(intent);
-        //Ayy
     }
 
     //Takes user to add video
     public void addVideo(View view) {
+        player.release();
         Intent intent = new Intent (this, AddVideoActivity.class);
         intent.putExtra("TYPE", "edit");
         intent.putExtra("WORD_NAME" , wordName);
@@ -116,6 +117,21 @@ public class WordActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    //Takes user to tag browse screen
+    public void getTags(View view) {
+        player.release();
+        Intent intent = new Intent(this, BrowseTagActivity.class);
+        intent.putExtra("TAG_SEARCH", false);
+        intent.putExtra("EXTRA_TAG_NAME", "null");
+        intent.putExtra("EXTRA_SEARCH_TERMS","null");
+        intent.putExtra("USERNAME", username);
+        intent.putExtra("LOGIN_STATUS", login_status);
+        intent.putExtra("WORD_SPEC",true);
+        intent.putExtra("WORD_NAME",wordName);
+        startActivity(intent);
+    }
+
+    //This task fetches all the info associated with a word
     public class WordTask extends AsyncTask<String, String, String> {
 
         Context context;
@@ -223,39 +239,12 @@ public class WordActivity extends AppCompatActivity {
                 TextView wordDef = (TextView) findViewById(R.id.DescText);
                 wordDef.setMovementMethod(new ScrollingMovementMethod());
                 wordDef.setText(word.getDefinition());
+                //TODO Username and date uploaded (not mandatory)
                 //TextView dateUploaded = (TextView) findViewById(R.id.DateText);
                 //dateUploaded.setText(word.getDateAdded());
 
-                /**
-                //Load in video
-                VideoView videoView = (VideoView) findViewById(R.id.videoView);
-                MediaController mediacontroller = new MediaController(WordActivity.this);
-                mediacontroller.setAnchorView(videoView);
-                videoView.setMediaController(mediacontroller);
-                videoView.setVideoURI(uri);
-                videoView.requestFocus();
-                videoView.start();
-                 */
-
                 //Move to VideoTask
                 new VideoTask().execute();
-
-                /** String uriPath = ("http://192.168.1.173:8080/FYP_Scripts/Videos/" + word.getName() + ".mp4");
-                Uri uri = Uri.parse(uriPath);
-                //Make instance of exoplayer
-                SimpleExoPlayer player = new SimpleExoPlayer.Builder(WordActivity.this).build();
-                // Bind the player to the view.
-                StyledPlayerView playerView = (StyledPlayerView) findViewById(R.id.playerView);
-                playerView.setPlayer(player);
-                // Build the media item.
-                MediaItem mediaItem = MediaItem.fromUri(uri);
-                // Set the media item to be played.
-                player.setMediaItem(mediaItem);
-                // Prepare the player.
-                player.prepare();
-                // Start the playback.
-                player.play();
-                 */
 
             } catch (JSONException e) {
                 Toast.makeText(WordActivity.this, e.toString(), Toast.LENGTH_LONG).show();
@@ -271,6 +260,17 @@ public class WordActivity extends AppCompatActivity {
         ProgressDialog pdLoading = new ProgressDialog(WordActivity.this);
         HttpURLConnection conn;
         URL url = null;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            //Show loading dialog
+            pdLoading.setMessage("\tLoading...");
+            pdLoading.setCancelable(false);
+            pdLoading.show();
+
+        }
 
         @Override
         protected String doInBackground(String... strings) {

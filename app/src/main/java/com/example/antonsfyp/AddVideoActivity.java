@@ -140,7 +140,7 @@ public class AddVideoActivity extends AppCompatActivity {
             }
 
             try {
-                //Encode data to post TODO pass username
+                //Encode data to post
                 String post_data = URLEncoder.encode("wordName", "UTF-8") + "=" + URLEncoder.encode(wordName, "UTF-8")+"&"
                         +URLEncoder.encode("fileName","UTF-8")+"="+URLEncoder.encode(filename,"UTF-8")+"&"
                         +URLEncoder.encode("userName","UTF-8")+"="+URLEncoder.encode(username,"UTF-8");

@@ -12,10 +12,10 @@
     <string name="camera_icon">Camera Icon</string>
     <string name="word_preview_title">Word/Phrase</string>
     <string name="definition_title">Definition</string>
-    <string name="add_video_title">Select a Video</string>
+    <string name="add_video_title">Select Video</string>
     <string name="logo">BSL4Kids logo</string>
     <string name="edit_button">EDIT</string>
-    <string name="add_video_button">Add a Video</string>
+    <string name="add_video_button">Add Video</string>
     <string name="upload_date">Upload Date</string>
     <string name="login_title">Login</string>
     <string name="email_title">Email</string>
@@ -31,4 +31,9 @@
     <string name="add_tag">Add a Tag</string>
     <string name="search_by_word">Search by Word/Phrase</string>
     <string name="search_by_tag">Search by Tag</string>
+    <string name="view_tags">View Tags</string>
+    <string name="add_tag_button">Add Tag</string>
+    <string name="report_button">Report</string>
+    <string name="like_button">Like</string>
+    <string name="like_num">NumLikes</string>
 </resources>
