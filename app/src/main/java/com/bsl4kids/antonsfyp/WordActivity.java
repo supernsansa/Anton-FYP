@@ -1,4 +1,4 @@
-package com.example.antonsfyp;
+package com.bsl4kids.antonsfyp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -48,6 +48,7 @@ public class WordActivity extends AppCompatActivity {
     private String searchTerms;
     private boolean login_status = false;
     private String username = "null";
+    private boolean liked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,10 +57,13 @@ public class WordActivity extends AppCompatActivity {
         wordName = getIntent().getStringExtra("EXTRA_WORD_NAME");
         searchTerms = getIntent().getStringExtra("EXTRA_SEARCH_TERMS");
 
+        new WordTask().execute();
+
         //If user has logged in/registered, get their status and user name
         login_status = getIntent().getBooleanExtra("LOGIN_STATUS",false);
         if(login_status == true) {
             username = getIntent().getStringExtra("USERNAME");
+            new LikeStatusTask().execute();
         }
         //If user isn't logged in, edit and add video buttons should be restricted
         else {
@@ -75,9 +79,15 @@ public class WordActivity extends AppCompatActivity {
             Button addTagButton = (Button) findViewById(R.id.addTagButton);
             addTagButton.getBackground().setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
             addTagButton.setClickable(false);
+            //Disable and gray out like button
+            Button likeButton = (Button) findViewById(R.id.like_button);
+            likeButton.getBackground().setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
+            likeButton.setClickable(false);
+            //Disable and gray out report button
+            Button reportButton = (Button) findViewById(R.id.report_button);
+            reportButton.getBackground().setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
+            reportButton.setClickable(false);
         }
-
-        new WordTask().execute();
     }
 
     @Override
@@ -87,8 +97,9 @@ public class WordActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onRestart() {
+        super.onRestart();
+        videoList = new ArrayList<>();
         new VideoTask().execute();
     }
 
@@ -129,6 +140,21 @@ public class WordActivity extends AppCompatActivity {
         intent.putExtra("WORD_SPEC",true);
         intent.putExtra("WORD_NAME",wordName);
         startActivity(intent);
+    }
+
+    //Takes user to add tag screen
+    public void addTag(View view) {
+        player.release();
+        Intent intent = new Intent (this, AddTagActivity.class);
+        intent.putExtra("WORD_NAME" , wordName);
+        intent.putExtra("USERNAME", username);
+        intent.putExtra("LOGIN_STATUS", login_status);
+        startActivity(intent);
+    }
+
+    //Notifies server to like or unlike a word
+    public void likeMethod(View view) {
+        new LikeTask().execute();
     }
 
     //This task fetches all the info associated with a word
@@ -227,11 +253,12 @@ public class WordActivity extends AppCompatActivity {
 
                 // Extract data from json and store into Word object
                 JSONObject json_data = jArray.getJSONObject(0);
-                word = new Word("null", "null", "null");
+                word = new Word("null", "null", "null", 0);
 
                 word.setName(json_data.getString("WordName"));
                 word.setDefinition(json_data.getString("Definition"));
                 word.setDateAdded(json_data.getString("DateAdded"));
+                word.setNumLikes(json_data.getInt("Likes"));
 
                 //Place text in appropriate UI elements
                 TextView wordTitle = (TextView) findViewById(R.id.WordNameText);
@@ -239,6 +266,8 @@ public class WordActivity extends AppCompatActivity {
                 TextView wordDef = (TextView) findViewById(R.id.DescText);
                 wordDef.setMovementMethod(new ScrollingMovementMethod());
                 wordDef.setText(word.getDefinition());
+                TextView numLikes = (TextView) findViewById(R.id.num_likes);
+                numLikes.setText(String.valueOf(word.getNumLikes()));
                 //TODO Username and date uploaded (not mandatory)
                 //TextView dateUploaded = (TextView) findViewById(R.id.DateText);
                 //dateUploaded.setText(word.getDateAdded());
@@ -385,4 +414,208 @@ public class WordActivity extends AppCompatActivity {
             }
         }
     }
+
+    //This task fetches the status of the like button
+    public class LikeStatusTask extends AsyncTask<String, String, String> {
+
+        Context context;
+        ProgressDialog pdLoading = new ProgressDialog(WordActivity.this);
+        HttpURLConnection conn;
+        URL url = null;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            //Show loading dialog
+            pdLoading.setMessage("\tLoading...");
+            pdLoading.setCancelable(false);
+            pdLoading.show();
+
+        }
+
+        @Override
+        protected String doInBackground(String[] objects) {
+            try {
+
+                // Enter URL address where your json file resides
+                // Even you can make call to php file which returns json data
+                url = new URL("http://192.168.1.173:8080/FYP_Scripts/fetchLikeStatus.php");
+
+            } catch (MalformedURLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                return e.toString();
+            }
+
+            try {
+
+                // Setup HttpURLConnection class to send and receive data from php and mysql
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(15000);
+                conn.setConnectTimeout(10000);
+
+                // setDoOutput to true as we receive data from json file
+                conn.setDoOutput(true);
+
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+                return e1.toString();
+            }
+
+            try {
+                //Encode data to post
+                String post_data = URLEncoder.encode("wordName", "UTF-8") + "=" + URLEncoder.encode(wordName, "UTF-8")+"&"
+                        +URLEncoder.encode("username","UTF-8")+"="+URLEncoder.encode(username,"UTF-8");
+
+                //Send encoded data
+                OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+
+                wr.write(post_data);
+                wr.flush();
+
+                // Read data sent from server
+                InputStream input = conn.getInputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+                StringBuilder result = new StringBuilder();
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+                    result.append(line);
+                }
+
+                System.out.println(result);
+
+                // Pass data to onPostExecute method
+                return (result.toString());
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                return e.toString();
+            } finally {
+                conn.disconnect();
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+            //this method will be running on UI thread
+            pdLoading.dismiss();
+            Button likeButton = (Button) findViewById(R.id.like_button);
+
+            if(result.equals("true")) {
+                likeButton.getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.MULTIPLY);
+                liked = true;
+            }
+            else {
+                likeButton.getBackground().clearColorFilter();
+                liked = false;
+            }
+
+        }
+    }
+
+    //This task fetches the status of the like button
+    public class LikeTask extends AsyncTask<String, String, String> {
+
+        Context context;
+        ProgressDialog pdLoading = new ProgressDialog(WordActivity.this);
+        HttpURLConnection conn;
+        URL url = null;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            //Show loading dialog
+            pdLoading.setMessage("\tLoading...");
+            pdLoading.setCancelable(false);
+            pdLoading.show();
+
+        }
+
+        @Override
+        protected String doInBackground(String[] objects) {
+            try {
+
+                if(liked == true) {
+                    url = new URL("http://192.168.1.173:8080/FYP_Scripts/unLike.php");
+                    word.setNumLikes(word.getNumLikes()-1);
+                }
+                else {
+                    url = new URL("http://192.168.1.173:8080/FYP_Scripts/addLike.php");
+                    word.setNumLikes(word.getNumLikes()+1);
+                }
+
+            } catch (MalformedURLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                return e.toString();
+            }
+
+            try {
+
+                // Setup HttpURLConnection class to send and receive data from php and mysql
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(15000);
+                conn.setConnectTimeout(10000);
+
+                // setDoOutput to true as we receive data from json file
+                conn.setDoOutput(true);
+
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+                return e1.toString();
+            }
+
+            try {
+                //Encode data to post
+                String post_data = URLEncoder.encode("wordName", "UTF-8") + "=" + URLEncoder.encode(wordName, "UTF-8")+"&"
+                        +URLEncoder.encode("username","UTF-8")+"="+URLEncoder.encode(username,"UTF-8");
+
+                //Send encoded data
+                OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+
+                wr.write(post_data);
+                wr.flush();
+
+                // Read data sent from server
+                InputStream input = conn.getInputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+                StringBuilder result = new StringBuilder();
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+                    result.append(line);
+                }
+
+                System.out.println(result);
+
+                // Pass data to onPostExecute method
+                return (result.toString());
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                return e.toString();
+            } finally {
+                conn.disconnect();
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+            //this method will be running on UI thread
+            pdLoading.dismiss();
+
+            TextView numLikes = (TextView) findViewById(R.id.num_likes);
+            numLikes.setText(String.valueOf(word.getNumLikes()));
+
+            new LikeStatusTask().execute();
+        }
+    }
+
 }

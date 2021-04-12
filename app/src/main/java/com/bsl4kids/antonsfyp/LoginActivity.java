@@ -1,20 +1,15 @@
-package com.example.antonsfyp;
-
-import androidx.appcompat.app.AppCompatActivity;
+package com.bsl4kids.antonsfyp;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Gallery;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,43 +20,39 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.concurrent.TimeUnit;
 
-public class AddWordActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
-    private static final int SELECT_VIDEO = 3;
-    private String selectedPath = "";
-    private static Intent VideoFileData;
-    private String wordName = "";
-    private boolean login_status = false;
-    private String username = "null";
+    private String email = "";
+    private String password = "";
+    private String username = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_word);
-
-        login_status = getIntent().getBooleanExtra("LOGIN_STATUS",false);
-        if(login_status == true) {
-            username = getIntent().getStringExtra("USERNAME");
-        }
+        setContentView(R.layout.activity_login);
     }
 
-    //Takes user input and adds a word entry to database
-    //TODO Moar validation
-    public void addWordToDB(View view) {
-        //Get editText boxes
-        EditText editWordName = (EditText) findViewById(R.id.editWordName);
-        //Extract strings from editText
-        wordName = editWordName.getText().toString();
+    public void moveToRegisterMenu(View view) {
+        Intent intent = new Intent (this, RegisterActivity.class);
+        startActivity(intent);
+    }
 
-        if(!wordName.equals("")) {
-            //Probe DB to check availability
-            new ProbeTask().execute();
+    public void login(View view) {
+        //Get editText boxes
+        EditText editEmail = (EditText) findViewById(R.id.editTextEmail);
+        EditText editPassword = (EditText) findViewById(R.id.editTextPassword);
+        //Extract strings from editText
+        email = editEmail.getText().toString();
+        password = editPassword.getText().toString();
+
+        if(!email.equals("") && !password.equals("")) {
+            //Attempt to create an account
+            new LoginTask().execute();
         }
         else {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-            alertDialogBuilder.setTitle("Please provide a word/phrase");
+            alertDialogBuilder.setTitle("Please fill in all the fields");
             alertDialogBuilder.setCancelable(false);
 
             alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -77,9 +68,9 @@ public class AddWordActivity extends AppCompatActivity {
         }
     }
 
-    public class ProbeTask extends AsyncTask<String, String, String> {
+    public class LoginTask extends AsyncTask<String, String, String> {
 
-        ProgressDialog pdLoading = new ProgressDialog(AddWordActivity.this);
+        ProgressDialog pdLoading = new ProgressDialog(LoginActivity.this);
         HttpURLConnection conn;
         URL url = null;
 
@@ -100,14 +91,13 @@ public class AddWordActivity extends AppCompatActivity {
 
                 // Enter URL address where your json file resides
                 // Even you can make call to php file which returns json data
-                url = new URL("http://192.168.1.173:8080/FYP_Scripts/probeDB.php");
+                url = new URL("http://192.168.1.173:8080/FYP_Scripts/login.php");
 
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
                 return e.toString();
             }
-
             try {
 
                 // Setup HttpURLConnection class to send and receive data from php and mysql
@@ -126,7 +116,8 @@ public class AddWordActivity extends AppCompatActivity {
 
             try {
                 //Encode data to post
-                String post_data = URLEncoder.encode("wordName","UTF-8")+"="+URLEncoder.encode(wordName,"UTF-8");
+                String post_data = URLEncoder.encode("email", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8") + "&"
+                        + URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode(password, "UTF-8");
 
                 //Send encoded data
                 OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
@@ -163,19 +154,32 @@ public class AddWordActivity extends AppCompatActivity {
             pdLoading.dismiss();
             pdLoading.dismiss();
             //If word isn't already in the db...
-            if (result.equals("proceed")) {
-                //Take user to next activity
-                Intent intent = new Intent (AddWordActivity.this, AddDescActivity.class);
-                intent.putExtra("TYPE","add");
-                intent.putExtra("WORD_NAME",wordName);
-                intent.putExtra("USERNAME", username);
-                intent.putExtra("LOGIN_STATUS", login_status);
-                startActivity(intent);
-            }
-            else {
-                //Display dialog to notify user that the word already exists
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AddWordActivity.this);
-                alertDialogBuilder.setTitle("An entry for this word already exists");
+            if (!result.equals("Login Failure")) {
+                username = result;
+                //Display dialog to notify user that login was succeeded
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(LoginActivity.this);
+                alertDialogBuilder.setTitle("Login Success");
+                alertDialogBuilder.setCancelable(false);
+
+                alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        //Take user to next activity
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        intent.putExtra("USERNAME", username);
+                        intent.putExtra("LOGIN_STATUS", true);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+            } else {
+                //Display dialog to notify user that login failed
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(LoginActivity.this);
+                alertDialogBuilder.setTitle(result);
                 alertDialogBuilder.setCancelable(false);
 
                 alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -191,4 +195,5 @@ public class AddWordActivity extends AppCompatActivity {
             }
         }
     }
+
 }

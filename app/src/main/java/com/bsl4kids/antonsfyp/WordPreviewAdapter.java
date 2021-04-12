@@ -1,20 +1,15 @@
-package com.example.antonsfyp;
+package com.bsl4kids.antonsfyp;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Collections;
 import java.util.List;
-
-import static com.example.antonsfyp.R.layout.word_preview_container;
 
 public class WordPreviewAdapter extends RecyclerView.Adapter {
 

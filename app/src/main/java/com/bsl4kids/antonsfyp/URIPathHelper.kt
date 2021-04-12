@@ -1,4 +1,4 @@
-package com.example.antonsfyp
+package com.bsl4kids.antonsfyp
 
 import android.content.ContentUris
 import android.content.Context

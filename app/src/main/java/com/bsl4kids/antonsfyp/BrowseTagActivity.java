@@ -1,4 +1,4 @@
-package com.example.antonsfyp;
+package com.bsl4kids.antonsfyp;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;

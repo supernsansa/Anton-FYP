@@ -1,4 +1,4 @@
-package com.example.antonsfyp;
+package com.bsl4kids.antonsfyp;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -7,8 +7,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -98,6 +96,10 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
         intent.putExtra("USERNAME", username);
         intent.putExtra("LOGIN_STATUS", login_status);
         startActivity(intent);
+    }
+
+    @Override
+    public void onBackPressed() {
         finish();
     }
 

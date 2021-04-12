@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.antonsfyp">
+    package="com.bsl4kids.antonsfyp">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -15,28 +15,29 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".BrowseTagActivity"></activity>
-        <activity android:name=".RegisterActivity"></activity>
-        <activity android:name=".LoginActivity"></activity>
+        <activity android:name=".AddTagActivity"></activity>
+        <activity android:name=".BrowseTagActivity" />
+        <activity android:name=".RegisterActivity" />
+        <activity android:name=".LoginActivity" />
         <activity
             android:name=".AddVideoActivity"
             android:parentActivityName=".AddDescActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".AddDescActivity" />
+                android:value="com.bsl4kids.antonsfyp.AddDescActivity" />
         </activity>
         <activity
             android:name=".AddDescActivity"
             android:parentActivityName=".AddWordActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".AddWordActivity" />
+                android:value="com.bsl4kids.antonsfyp.AddWordActivity" />
         </activity>
-        <activity android:name=".WordActivity"></activity>
+        <activity android:name=".WordActivity" />
         <activity
             android:name=".BrowseActivity"
-            android:windowSoftInputMode="adjustPan"></activity>
-        <activity android:name=".AddWordActivity"></activity>
+            android:windowSoftInputMode="adjustPan" />
+        <activity android:name=".AddWordActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

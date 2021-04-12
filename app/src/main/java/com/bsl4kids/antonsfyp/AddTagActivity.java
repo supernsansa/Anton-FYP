@@ -1,4 +1,6 @@
-package com.example.antonsfyp;
+package com.bsl4kids.antonsfyp;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -8,11 +10,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
-
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,61 +21,38 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 
-//This activity takes user input for the definition of a new/existing word
-public class AddDescActivity extends AppCompatActivity {
+//This activity handles the creation of new tags
+public class AddTagActivity extends AppCompatActivity {
 
-    private String type;
     private String wordName;
-    private String current_desc;
-    private EditText editWordDesc;
-    private String descInput;
+    private String tagInput;
     private boolean login_status = false;
     private String username = "null";
+    private EditText editTagText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_desc);
-        type = getIntent().getStringExtra("TYPE");
+        setContentView(R.layout.activity_add_tag);
+
         wordName = getIntent().getStringExtra("WORD_NAME");
 
         login_status = getIntent().getBooleanExtra("LOGIN_STATUS",false);
         if(login_status == true) {
             username = getIntent().getStringExtra("USERNAME");
         }
-
-        if(type.equals("edit")) {
-            current_desc = getIntent().getStringExtra("CURRENT_DESC");
-            editWordDesc = (EditText) findViewById(R.id.editDefBox);
-            editWordDesc.setText(current_desc);
-            TextView textView = (TextView) findViewById(R.id.DescTitle);
-            textView.setText("Edit Definition");
-        }
     }
 
-    //Takes user input and proceeds to next activity
-    public void moveToVideoSelect(View view) {
-        editWordDesc = (EditText) findViewById(R.id.editDefBox);
-        descInput = editWordDesc.getText().toString();
+    public void addTagSubmit(View view) {
+        editTagText = (EditText) findViewById(R.id.editTagText);
+        tagInput = editTagText.getText().toString();
 
-        if(type.equals("add")) {
-            //Take user to next activity
-            Intent intent = new Intent (this, AddVideoActivity.class);
-            intent.putExtra("WORD_NAME",wordName);
-            intent.putExtra("WORD_DESC",descInput);
-            intent.putExtra("TYPE",type);
-            intent.putExtra("USERNAME", username);
-            intent.putExtra("LOGIN_STATUS", login_status);
-            startActivity(intent);
-        }
-        else {
-            new EditTask().execute();
-        }
+        new AddTagTask().execute();
     }
 
-    public class EditTask extends AsyncTask<String, String, String> {
+    public class AddTagTask extends AsyncTask<String, String, String> {
 
-        ProgressDialog pdLoading = new ProgressDialog(AddDescActivity.this);
+        ProgressDialog pdLoading = new ProgressDialog(AddTagActivity.this);
         HttpURLConnection conn;
         URL url = null;
 
@@ -99,7 +73,7 @@ public class AddDescActivity extends AppCompatActivity {
 
                 // Enter URL address where your json file resides
                 // Even you can make call to php file which returns json data
-                url = new URL("http://192.168.1.173:8080/FYP_Scripts/editWord.php");
+                url = new URL("http://192.168.1.173:8080/FYP_Scripts/addTag.php");
 
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
@@ -126,7 +100,7 @@ public class AddDescActivity extends AppCompatActivity {
             try {
                 //Encode data to post
                 String post_data = URLEncoder.encode("wordName", "UTF-8") + "=" + URLEncoder.encode(wordName, "UTF-8")+"&"
-                        +URLEncoder.encode("wordDesc","UTF-8")+"="+URLEncoder.encode(descInput,"UTF-8");
+                        +URLEncoder.encode("tagName","UTF-8")+"="+URLEncoder.encode(tagInput,"UTF-8");
 
                 //Send encoded data
                 OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
@@ -161,7 +135,7 @@ public class AddDescActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             pdLoading.dismiss();
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AddDescActivity.this);
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AddTagActivity.this);
             alertDialogBuilder.setTitle("Status:");
             alertDialogBuilder.setMessage(result);
             alertDialogBuilder.setCancelable(false);
@@ -170,11 +144,8 @@ public class AddDescActivity extends AppCompatActivity {
 
                 @Override
                 public void onClick(DialogInterface arg0, int arg1) {
-                    //Take user back to main menu
-                    Intent intent = new Intent(AddDescActivity.this , MainActivity.class);
-                    intent.putExtra("USERNAME", username);
-                    intent.putExtra("LOGIN_STATUS", login_status);
-                    startActivity(intent);
+                    //Go back to previous activity
+                    finish();
                 }
             });
 
@@ -182,5 +153,4 @@ public class AddDescActivity extends AppCompatActivity {
             alertDialog.show();
         }
     }
-
 }

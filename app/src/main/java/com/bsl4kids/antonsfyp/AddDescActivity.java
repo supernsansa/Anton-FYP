@@ -1,4 +1,4 @@
-package com.example.antonsfyp;
+package com.bsl4kids.antonsfyp;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -22,79 +22,61 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 
-public class AddVideoActivity extends AppCompatActivity {
+//This activity takes user input for the definition of a new/existing word
+public class AddDescActivity extends AppCompatActivity {
 
-    private static final int SELECT_VIDEO = 3;
-    private String selectedPath = "";
-    private static Intent VideoFileData;
-    private String wordName;
-    private String wordDesc;
     private String type;
-    private int vidIndex;
-    private String filename;
+    private String wordName;
+    private String current_desc;
+    private EditText editWordDesc;
+    private String descInput;
     private boolean login_status = false;
     private String username = "null";
-    UploadUtility uploadUtility;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_video);
-        wordName = getIntent().getStringExtra("WORD_NAME");
-        wordDesc = getIntent().getStringExtra("WORD_DESC");
+        setContentView(R.layout.activity_add_desc);
         type = getIntent().getStringExtra("TYPE");
-        uploadUtility = new UploadUtility(this);
+        wordName = getIntent().getStringExtra("WORD_NAME");
 
         login_status = getIntent().getBooleanExtra("LOGIN_STATUS",false);
         if(login_status == true) {
             username = getIntent().getStringExtra("USERNAME");
         }
 
-        if (type.equals("edit")) {
-            TextView textView = (TextView) findViewById(R.id.addVideoTitle);
-            textView.setText("Add a Video");
-            vidIndex = getIntent().getIntExtra("NUM_VIDEOS",0);
-            //TODO change filename system to wordID+vidIndex.mp4
-            filename = wordName + String.valueOf(vidIndex);
+        if(type.equals("edit")) {
+            current_desc = getIntent().getStringExtra("CURRENT_DESC");
+            editWordDesc = (EditText) findViewById(R.id.editDefBox);
+            editWordDesc.setText(current_desc);
+            TextView textView = (TextView) findViewById(R.id.DescTitle);
+            textView.setText("Edit Definition");
         }
-
     }
 
-    //Get video for upload
-    public void chooseVideoFromGallery(View view) {
-        Intent intent = new Intent();
-        intent.setType("video/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent,"Select a Video "), SELECT_VIDEO);
-    }
+    //Takes user input and proceeds to next activity
+    public void moveToVideoSelect(View view) {
+        editWordDesc = (EditText) findViewById(R.id.editDefBox);
+        descInput = editWordDesc.getText().toString();
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        VideoFileData = data;
-    }
-
-    //TODO Display video preview
-
-    public void uploadData(View view) {
-        if (type.equals("add")) {
-            //Upload video
-            //TODO change filename system to wordID.mp4
-            uploadUtility.uploadFile(VideoFileData.getData(),(wordName + ".mp4"));
-            //Create NetworkTask instance
-            String type = "AddWord";
-            NetworkTask task = new NetworkTask(this);
-            task.execute(type,wordName,wordDesc,username);
+        if(type.equals("add")) {
+            //Take user to next activity
+            Intent intent = new Intent (this, AddVideoActivity.class);
+            intent.putExtra("WORD_NAME",wordName);
+            intent.putExtra("WORD_DESC",descInput);
+            intent.putExtra("TYPE",type);
+            intent.putExtra("USERNAME", username);
+            intent.putExtra("LOGIN_STATUS", login_status);
+            startActivity(intent);
         }
         else {
-            new AddVideoTask().execute();
+            new EditTask().execute();
         }
     }
 
-    //Opens a thread to upload a video and create an entry into the videodb
-    public class AddVideoTask extends AsyncTask<String, String, String> {
+    public class EditTask extends AsyncTask<String, String, String> {
 
-        ProgressDialog pdLoading = new ProgressDialog(AddVideoActivity.this);
+        ProgressDialog pdLoading = new ProgressDialog(AddDescActivity.this);
         HttpURLConnection conn;
         URL url = null;
 
@@ -115,7 +97,7 @@ public class AddVideoActivity extends AppCompatActivity {
 
                 // Enter URL address where your json file resides
                 // Even you can make call to php file which returns json data
-                url = new URL("http://192.168.1.173:8080/FYP_Scripts/addVideo.php");
+                url = new URL("http://192.168.1.173:8080/FYP_Scripts/editWord.php");
 
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
@@ -142,8 +124,7 @@ public class AddVideoActivity extends AppCompatActivity {
             try {
                 //Encode data to post
                 String post_data = URLEncoder.encode("wordName", "UTF-8") + "=" + URLEncoder.encode(wordName, "UTF-8")+"&"
-                        +URLEncoder.encode("fileName","UTF-8")+"="+URLEncoder.encode(filename,"UTF-8")+"&"
-                        +URLEncoder.encode("userName","UTF-8")+"="+URLEncoder.encode(username,"UTF-8");
+                        +URLEncoder.encode("wordDesc","UTF-8")+"="+URLEncoder.encode(descInput,"UTF-8");
 
                 //Send encoded data
                 OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
@@ -170,8 +151,7 @@ public class AddVideoActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
                 return e.toString();
-            }
-            finally {
+            } finally {
                 conn.disconnect();
             }
         }
@@ -179,29 +159,20 @@ public class AddVideoActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             pdLoading.dismiss();
-
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AddVideoActivity.this);
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AddDescActivity.this);
             alertDialogBuilder.setTitle("Status:");
             alertDialogBuilder.setMessage(result);
             alertDialogBuilder.setCancelable(false);
-
-            final String response = result;
-            System.out.println(response);
 
             alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 
                 @Override
                 public void onClick(DialogInterface arg0, int arg1) {
-                    if(response.equals("Video entry created")) {
-                        System.out.println("Got here");
-                        uploadUtility.uploadFile(VideoFileData.getData(),(filename + ".mp4"));
-                    }
                     //Take user back to main menu
-                    Intent intent = new Intent(AddVideoActivity.this , MainActivity.class);
+                    Intent intent = new Intent(AddDescActivity.this , MainActivity.class);
                     intent.putExtra("USERNAME", username);
                     intent.putExtra("LOGIN_STATUS", login_status);
                     startActivity(intent);
-                    finish();
                 }
             });
 
@@ -209,4 +180,5 @@ public class AddVideoActivity extends AppCompatActivity {
             alertDialog.show();
         }
     }
+
 }
