@@ -122,6 +122,7 @@ public class WordActivity extends AppCompatActivity {
         intent.putExtra("TYPE", "edit");
         intent.putExtra("WORD_NAME" , wordName);
         intent.putExtra("CURRENT_DESC" , word.getDefinition());
+        intent.putExtra("WORD_ID" , word.getWordID());
         intent.putExtra("NUM_VIDEOS" , videoList.size());
         intent.putExtra("USERNAME", username);
         intent.putExtra("LOGIN_STATUS", login_status);
@@ -253,12 +254,13 @@ public class WordActivity extends AppCompatActivity {
 
                 // Extract data from json and store into Word object
                 JSONObject json_data = jArray.getJSONObject(0);
-                word = new Word("null", "null", "null", 0);
+                word = new Word("null", "null", "null", 0, 0);
 
                 word.setName(json_data.getString("WordName"));
                 word.setDefinition(json_data.getString("Definition"));
                 word.setDateAdded(json_data.getString("DateAdded"));
                 word.setNumLikes(json_data.getInt("Likes"));
+                word.setWordID(json_data.getInt("WordID"));
 
                 //Place text in appropriate UI elements
                 TextView wordTitle = (TextView) findViewById(R.id.WordNameText);

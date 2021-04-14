@@ -11,6 +11,10 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,6 +38,7 @@ public class AddVideoActivity extends AppCompatActivity {
     private boolean login_status = false;
     private String username = "null";
     UploadUtility uploadUtility;
+    private int wordID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +58,9 @@ public class AddVideoActivity extends AppCompatActivity {
             TextView textView = (TextView) findViewById(R.id.addVideoTitle);
             textView.setText("Add a Video");
             vidIndex = getIntent().getIntExtra("NUM_VIDEOS",0);
+            wordID = getIntent().getIntExtra("WORD_ID",0);
             //TODO change filename system to wordID+vidIndex.mp4
-            filename = wordName + String.valueOf(vidIndex);
+            filename = String.valueOf(wordID) + String.valueOf(vidIndex);
         }
 
     }
@@ -77,23 +83,24 @@ public class AddVideoActivity extends AppCompatActivity {
 
     public void uploadData(View view) {
         if (type.equals("add")) {
+            new AddWordTask().execute();
             //Upload video
             //TODO change filename system to wordID.mp4
-            uploadUtility.uploadFile(VideoFileData.getData(),(wordName + ".mp4"));
+            //uploadUtility.uploadFile(VideoFileData.getData(),(wordName + ".mp4"));
             //Create NetworkTask instance
-            String type = "AddWord";
-            NetworkTask task = new NetworkTask(this);
-            task.execute(type,wordName,wordDesc,username);
+            //String type = "AddWord";
+            //NetworkTask task = new NetworkTask(this);
+            //task.execute(type,wordName,wordDesc,username);
         }
         else {
             new AddVideoTask().execute();
         }
     }
 
-    //Opens a thread to upload a video and create an entry into the videodb
-    public class AddVideoTask extends AsyncTask<String, String, String> {
+    //This task is responsible for creating an entry for a new word in the worddb
+    public class AddWordTask extends AsyncTask<String, String, String> {
 
-        ProgressDialog pdLoading = new ProgressDialog(AddVideoActivity.this);
+        //ProgressDialog pdLoading = new ProgressDialog(AddVideoActivity.this);
         HttpURLConnection conn;
         URL url = null;
 
@@ -102,9 +109,115 @@ public class AddVideoActivity extends AppCompatActivity {
             super.onPreExecute();
 
             //Show loading dialog
-            pdLoading.setMessage("\tLoading...");
-            pdLoading.setCancelable(false);
-            pdLoading.show();
+           // pdLoading.setMessage("\tLoading...");
+            //pdLoading.setCancelable(false);
+            //pdLoading.show();
+
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            try {
+
+                // Enter URL address where your json file resides
+                // Even you can make call to php file which returns json data
+                url = new URL("http://192.168.1.173:8080/FYP_Scripts/addWord.php");
+
+            } catch (MalformedURLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                return e.toString();
+            }
+
+            try {
+
+                // Setup HttpURLConnection class to send and receive data from php and mysql
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(15000);
+                conn.setConnectTimeout(10000);
+
+                // setDoOutput to true as we receive data from json file
+                conn.setDoOutput(true);
+
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+                return e1.toString();
+            }
+
+            try {
+                //Encode data to post
+                String post_data = URLEncoder.encode("wordName", "UTF-8") + "=" + URLEncoder.encode(wordName, "UTF-8") + "&"
+                        + URLEncoder.encode("wordDesc", "UTF-8") + "=" + URLEncoder.encode(wordDesc, "UTF-8");
+
+                //Send encoded data
+                OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+
+                wr.write(post_data);
+                wr.flush();
+
+                // Read data sent from server
+                InputStream input = conn.getInputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+                StringBuilder result = new StringBuilder();
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+                    result.append(line);
+                }
+
+                //Debug
+                System.out.println(result);
+
+                // Pass data to onPostExecute method
+                return (result.toString());
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                return e.toString();
+            } finally {
+                conn.disconnect();
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            //pdLoading.dismiss();
+
+            try {
+
+                JSONArray jArray = new JSONArray(result);
+
+                // Extract data from json
+                JSONObject json_data = jArray.getJSONObject(0);
+
+                wordID = json_data.getInt("WordID");
+                filename = String.valueOf(wordID) + String.valueOf(vidIndex);
+
+                new AddVideoTask().execute();
+
+            }
+            catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    //Opens a thread to create an entry into the videodb
+    public class AddVideoTask extends AsyncTask<String, String, String> {
+
+        //ProgressDialog pdLoading = new ProgressDialog(AddVideoActivity.this);
+        HttpURLConnection conn;
+        URL url = null;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            //Show loading dialog
+            //pdLoading.setMessage("\tLoading...");
+            //pdLoading.setCancelable(false);
+            //pdLoading.show();
 
         }
 
@@ -177,9 +290,9 @@ public class AddVideoActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result) {
-            pdLoading.dismiss();
+            //pdLoading.dismiss();
 
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AddVideoActivity.this);
+            final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AddVideoActivity.this);
             alertDialogBuilder.setTitle("Status:");
             alertDialogBuilder.setMessage(result);
             alertDialogBuilder.setCancelable(false);
@@ -193,14 +306,17 @@ public class AddVideoActivity extends AppCompatActivity {
                 public void onClick(DialogInterface arg0, int arg1) {
                     if(response.equals("Video entry created")) {
                         System.out.println("Got here");
+
+                        //TODO Maybe change upload mechanism
                         uploadUtility.uploadFile(VideoFileData.getData(),(filename + ".mp4"));
                     }
+
+                    //TODO try and change this
                     //Take user back to main menu
                     Intent intent = new Intent(AddVideoActivity.this , MainActivity.class);
                     intent.putExtra("USERNAME", username);
                     intent.putExtra("LOGIN_STATUS", login_status);
                     startActivity(intent);
-                    finish();
                 }
             });
 
