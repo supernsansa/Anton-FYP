@@ -68,6 +68,9 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:26.7.0')
     implementation 'com.google.firebase:firebase-analytics'
 
+    // Dependency on local binaries
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
 
 }
 repositories {

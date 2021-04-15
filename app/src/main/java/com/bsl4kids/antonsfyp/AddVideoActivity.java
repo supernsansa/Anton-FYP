@@ -4,11 +4,14 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.json.JSONArray;
@@ -16,6 +19,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -24,6 +29,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import org.jibble.simpleftp.*;
 
 public class AddVideoActivity extends AppCompatActivity {
 
@@ -39,6 +48,8 @@ public class AddVideoActivity extends AppCompatActivity {
     private String username = "null";
     UploadUtility uploadUtility;
     private int wordID;
+    private Uri fileUri;
+    private File file;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,10 +84,26 @@ public class AddVideoActivity extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(intent,"Select a Video "), SELECT_VIDEO);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         VideoFileData = data;
+
+        //the selected video
+        fileUri = data.getData();
+        System.out.println(fileUri.getPath());
+        file = new File(fileUri.getPath());
+        try {
+            System.out.println(file.getCanonicalPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println(file.getPath());
+        System.out.println(file.getName());
+        System.out.println(new URIPathHelper().getPath(this, fileUri));
+        file = new File(new URIPathHelper().getPath(this, fileUri));
+        System.out.println(file.getPath());
     }
 
     //TODO Display video preview
@@ -194,7 +221,7 @@ public class AddVideoActivity extends AppCompatActivity {
                 wordID = json_data.getInt("WordID");
                 filename = String.valueOf(wordID) + String.valueOf(vidIndex);
 
-                new AddVideoTask().execute();
+                new uploadTask().execute();
 
             }
             catch (JSONException e) {
@@ -306,12 +333,9 @@ public class AddVideoActivity extends AppCompatActivity {
                 public void onClick(DialogInterface arg0, int arg1) {
                     if(response.equals("Video entry created")) {
                         System.out.println("Got here");
-
-                        //TODO Maybe change upload mechanism
-                        uploadUtility.uploadFile(VideoFileData.getData(),(filename + ".mp4"));
                     }
 
-                    //TODO try and change this
+                    //TODO try and change this so that loading dialog can finish first
                     //Take user back to main menu
                     Intent intent = new Intent(AddVideoActivity.this , MainActivity.class);
                     intent.putExtra("USERNAME", username);
@@ -322,6 +346,69 @@ public class AddVideoActivity extends AppCompatActivity {
 
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.show();
+        }
+    }
+
+    //Opens a thread to create an entry into the videodb
+    public class uploadTask extends AsyncTask<String, String, String> {
+
+        ProgressDialog pdLoading = new ProgressDialog(AddVideoActivity.this);
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            /**
+            //Show loading dialog
+            pdLoading.setMessage("\tUploading...");
+            pdLoading.setCancelable(false);
+            pdLoading.show();
+             */
+
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            /**
+            try
+            {
+                SimpleFTP ftp = new SimpleFTP();
+
+                // Connect to an FTP server on port 21.
+                ftp.connect("unix.sussex.ac.uk", 22, "anoc20", "Kasuba123!");
+
+                // Set binary mode.
+                ftp.bin();
+
+                // Change to a new working directory on the FTP server.
+                //ftp.cwd("");
+
+                // You can also upload from an InputStream, e.g.
+                ftp.stor(new FileInputStream(file), filename);
+
+                // Quit from the FTP server.
+                ftp.disconnect();
+                return "success";
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+                return "failure";
+            }
+             */
+            return uploadUtility.uploadFile(VideoFileData.getData(),(filename + ".mp4"));
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            //pdLoading.dismiss();
+            System.out.println(result);
+            if(result.equals("success")) {
+                new AddVideoTask().execute();
+            }
+            else {
+                return;
+            }
         }
     }
 }

@@ -23,17 +23,18 @@ class UploadUtility(activity: Activity) {
         uploadFile(File(sourceFilePath), uploadedFileName)
     }
 
-    fun uploadFile(sourceFileUri: Uri, uploadedFileName: String? = null) {
+    fun uploadFile(sourceFileUri: Uri, uploadedFileName: String? = null): String {
         val pathFromUri = URIPathHelper().getPath(activity,sourceFileUri)
-        uploadFile(File(pathFromUri), uploadedFileName)
+        return uploadFile(File(pathFromUri), uploadedFileName)
     }
 
-    fun uploadFile(sourceFile: File, uploadedFileName: String? = null) {
-        Thread {
+    fun uploadFile(sourceFile: File, uploadedFileName: String? = null): String {
+        //Thread {
             val mimeType = getMimeType(sourceFile);
             if (mimeType == null) {
                 Log.e("file error", "Not able to get mime type")
-                return@Thread
+                //return@Thread
+                return "fail"
             }
             val fileName: String = if (uploadedFileName == null)  sourceFile.name else uploadedFileName
             toggleProgressDialog(true)
@@ -50,17 +51,22 @@ class UploadUtility(activity: Activity) {
                 if (response.isSuccessful) {
                     Log.d("File upload","success, path: $serverUploadDirectoryPath$fileName")
                     showToast("File uploaded successfully at $serverUploadDirectoryPath$fileName")
+                    toggleProgressDialog(false)
+                    return "success"
                 } else {
                     Log.e("File upload", "failed")
                     showToast("File uploading failed")
+                    toggleProgressDialog(false)
+                    return "fail"
                 }
             } catch (ex: Exception) {
                 ex.printStackTrace()
                 Log.e("File upload", "failed")
                 showToast("File uploading failed")
+                toggleProgressDialog(false)
+                return "fail"
             }
-            toggleProgressDialog(false)
-        }.start()
+        //}.start()
     }
 
     // url = file path or whatever suitable URL you want.
