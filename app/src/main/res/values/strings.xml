@@ -37,4 +37,6 @@
     <string name="like_button">Like</string>
     <string name="like_num">NumLikes</string>
     <string name="add_tag_title">Add Tag</string>
+    <string name="word_default_title">Word Title</string>
+    <string name="num_likes_default">num likes</string>
 </resources>

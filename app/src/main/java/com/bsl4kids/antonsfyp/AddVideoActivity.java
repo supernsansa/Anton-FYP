@@ -14,6 +14,11 @@ import android.widget.TextView;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.ui.StyledPlayerView;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,6 +55,7 @@ public class AddVideoActivity extends AppCompatActivity {
     private int wordID;
     private Uri fileUri;
     private File file;
+    private SimpleExoPlayer player;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,10 +76,14 @@ public class AddVideoActivity extends AppCompatActivity {
             textView.setText("Add a Video");
             vidIndex = getIntent().getIntExtra("NUM_VIDEOS",0);
             wordID = getIntent().getIntExtra("WORD_ID",0);
-            //TODO change filename system to wordID+vidIndex.mp4
             filename = String.valueOf(wordID) + String.valueOf(vidIndex);
         }
 
+        //Make instance of exoplayer
+        player = new SimpleExoPlayer.Builder(AddVideoActivity.this).build();
+        // Bind the player to the view.
+        StyledPlayerView playerView = (StyledPlayerView) findViewById(R.id.previewPlayer);
+        playerView.setPlayer(player);
     }
 
     //Get video for upload
@@ -90,38 +100,29 @@ public class AddVideoActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         VideoFileData = data;
 
-        //the selected video
-        fileUri = data.getData();
-        System.out.println(fileUri.getPath());
-        file = new File(fileUri.getPath());
-        try {
-            System.out.println(file.getCanonicalPath());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        System.out.println(file.getPath());
-        System.out.println(file.getName());
-        System.out.println(new URIPathHelper().getPath(this, fileUri));
-        file = new File(new URIPathHelper().getPath(this, fileUri));
-        System.out.println(file.getPath());
+        // Build the media item.
+        MediaItem mediaItem = MediaItem.fromUri(new URIPathHelper().getPath(this, VideoFileData.getData()));
+        //Mute the player
+        player.setVolume(0f);
+        //Prepare player
+        player.setMediaItem(mediaItem);
+        player.prepare();
     }
-
-    //TODO Display video preview
 
     public void uploadData(View view) {
         if (type.equals("add")) {
             new AddWordTask().execute();
-            //Upload video
-            //TODO change filename system to wordID.mp4
-            //uploadUtility.uploadFile(VideoFileData.getData(),(wordName + ".mp4"));
-            //Create NetworkTask instance
-            //String type = "AddWord";
-            //NetworkTask task = new NetworkTask(this);
-            //task.execute(type,wordName,wordDesc,username);
         }
         else {
-            new AddVideoTask().execute();
+            new UploadTask().execute();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        player.release();
+        finish();
     }
 
     //This task is responsible for creating an entry for a new word in the worddb
@@ -221,7 +222,7 @@ public class AddVideoActivity extends AppCompatActivity {
                 wordID = json_data.getInt("WordID");
                 filename = String.valueOf(wordID) + String.valueOf(vidIndex);
 
-                new uploadTask().execute();
+                new UploadTask().execute();
 
             }
             catch (JSONException e) {
@@ -331,12 +332,11 @@ public class AddVideoActivity extends AppCompatActivity {
 
                 @Override
                 public void onClick(DialogInterface arg0, int arg1) {
-                    if(response.equals("Video entry created")) {
+                    if(response.equals("Success!")) {
                         System.out.println("Got here");
                     }
-
-                    //TODO try and change this so that loading dialog can finish first
                     //Take user back to main menu
+                    player.release();
                     Intent intent = new Intent(AddVideoActivity.this , MainActivity.class);
                     intent.putExtra("USERNAME", username);
                     intent.putExtra("LOGIN_STATUS", login_status);
@@ -350,7 +350,7 @@ public class AddVideoActivity extends AppCompatActivity {
     }
 
     //Opens a thread to create an entry into the videodb
-    public class uploadTask extends AsyncTask<String, String, String> {
+    public class UploadTask extends AsyncTask<String, String, String> {
 
         ProgressDialog pdLoading = new ProgressDialog(AddVideoActivity.this);
 

@@ -21,29 +21,36 @@
 
     <EditText
         android:id="@+id/editDefBox"
-        android:layout_width="333dp"
-        android:layout_height="269dp"
+        android:layout_width="380dp"
+        android:layout_height="270dp"
+        android:background="@drawable/my_border"
         android:ems="10"
         android:gravity="start|top"
         android:inputType="textMultiLine"
+        android:paddingLeft="5dp"
+        android:paddingTop="1dp"
+        android:paddingRight="5dp"
+        android:paddingBottom="1dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.483"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/DescTitle"
-        app:layout_constraintVertical_bias="0.41" />
+        app:layout_constraintVertical_bias="0.373" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/enterDescButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="107dp"
+        android:layout_marginTop="70dp"
+        android:layout_marginBottom="44dp"
         android:clickable="true"
         android:onClick="moveToVideoSelect"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.89"
+        app:layout_constraintHorizontal_bias="0.907"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editDefBox"
-        app:layout_constraintVertical_bias="0.191"
+        app:layout_constraintVertical_bias="0.106"
         app:srcCompat="@android:drawable/ic_menu_send" />
 </androidx.constraintlayout.widget.ConstraintLayout>

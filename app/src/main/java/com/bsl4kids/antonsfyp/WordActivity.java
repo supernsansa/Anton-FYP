@@ -269,7 +269,7 @@ public class WordActivity extends AppCompatActivity {
                 wordDef.setMovementMethod(new ScrollingMovementMethod());
                 wordDef.setText(word.getDefinition());
                 TextView numLikes = (TextView) findViewById(R.id.num_likes);
-                numLikes.setText(String.valueOf(word.getNumLikes()));
+                numLikes.setText(String.valueOf(word.getNumLikes()) + "\uD83D\uDC4D");
                 //TODO Username and date uploaded (not mandatory)
                 //TextView dateUploaded = (TextView) findViewById(R.id.DateText);
                 //dateUploaded.setText(word.getDateAdded());
@@ -614,7 +614,7 @@ public class WordActivity extends AppCompatActivity {
             pdLoading.dismiss();
 
             TextView numLikes = (TextView) findViewById(R.id.num_likes);
-            numLikes.setText(String.valueOf(word.getNumLikes()));
+            numLikes.setText(String.valueOf(word.getNumLikes() + "\uD83D\uDC4D"));
 
             new LikeStatusTask().execute();
         }

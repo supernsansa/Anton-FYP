@@ -33,9 +33,10 @@
         <TextView
             android:id="@+id/WordNameText"
             android:layout_width="360dp"
-            android:layout_height="44dp"
+            android:layout_height="45dp"
             android:layout_marginTop="16dp"
             android:text="@string/word_preview_title"
+            android:textColor="@android:color/black"
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -45,19 +46,26 @@
 
         <com.google.android.exoplayer2.ui.StyledPlayerView
             android:id="@+id/playerView"
-            android:layout_width="325dp"
-            android:layout_height="380dp"
+            android:layout_width="400dp"
+            android:layout_height="400dp"
             android:layout_marginTop="24dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.454"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/addVideoButton" />
 
         <TextView
             android:id="@+id/DescText"
-            android:layout_width="325dp"
-            android:layout_height="165dp"
+            android:layout_width="382dp"
+            android:layout_height="151dp"
             android:layout_marginTop="12dp"
+            android:background="@drawable/my_border"
+            android:paddingLeft="5dp"
+            android:paddingTop="1dp"
+            android:paddingRight="5dp"
+            android:paddingBottom="1dp"
             android:text="@string/placeholder_def"
+            android:textColor="@android:color/black"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -99,7 +107,7 @@
 
         <Button
             android:id="@+id/addVideoButton"
-            android:layout_width="100dp"
+            android:layout_width="120dp"
             android:layout_height="45dp"
             android:layout_marginTop="12dp"
             android:layout_marginEnd="24dp"
@@ -134,7 +142,7 @@
 
         <TextView
             android:id="@+id/num_likes"
-            android:layout_width="60dp"
+            android:layout_width="70dp"
             android:layout_height="45dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="12dp"

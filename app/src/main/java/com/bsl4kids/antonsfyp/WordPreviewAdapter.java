@@ -20,7 +20,7 @@ public class WordPreviewAdapter extends RecyclerView.Adapter {
     int currentPos=0;
     private OnItemClickListener clickListener;
 
-    // create constructor to initialize context and data sent from MainActivity
+    // create constructor to initialize context and data sent from BrowseActivity
     public WordPreviewAdapter(Context context, List<WordPreview> data){
         this.context=context;
         inflater= LayoutInflater.from(context);
@@ -43,7 +43,14 @@ public class WordPreviewAdapter extends RecyclerView.Adapter {
         MyHolder myHolder = (MyHolder) holder;
         WordPreview current = data.get(position);
         myHolder.textName.setText(current.getName());
-        myHolder.textDefinition.setText(current.getDefinition());
+        myHolder.textDefinition.setText("");//current.getDefinition());
+        //If tag, don't display likes
+        if(current.getLikes() == -1) {
+            myHolder.textLikes.setText("");
+        }
+        else {
+            myHolder.textLikes.setText(String.valueOf(current.getLikes()) + "\uD83D\uDC4D");
+        }
 
     }
 
@@ -61,12 +68,14 @@ public class WordPreviewAdapter extends RecyclerView.Adapter {
 
         TextView textName;
         TextView textDefinition;
+        TextView textLikes;
 
         // create constructor to get widget reference
         public MyHolder(View itemView) {
             super(itemView);
             textName= (TextView) itemView.findViewById(R.id.textName);
             textDefinition = (TextView) itemView.findViewById(R.id.textDefinition);
+            textLikes = (TextView) itemView.findViewById(R.id.numLikesText);
             itemView.setOnClickListener(this); // bind the listener
         }
 

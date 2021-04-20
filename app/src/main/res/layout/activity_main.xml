@@ -72,6 +72,6 @@
         app:layout_constraintHorizontal_bias="0.466"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/bsl4kids_logo" />
+        app:srcCompat="@drawable/bsl4kids_logo_redux" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

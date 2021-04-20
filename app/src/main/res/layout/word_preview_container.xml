@@ -11,6 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
+        android:text="@string/word_default_title"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
@@ -22,6 +23,16 @@
         android:text="Small Text"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#666" />
+
+    <TextView
+        android:id="@+id/numLikesText"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="6dp"
+        android:text="@string/num_likes_default"
+        android:textAlignment="textEnd" />
 
 
 </RelativeLayout>

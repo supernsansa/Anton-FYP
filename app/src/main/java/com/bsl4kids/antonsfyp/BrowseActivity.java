@@ -1,6 +1,7 @@
 package com.bsl4kids.antonsfyp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -342,16 +343,18 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
                 // Extract data from json and store into ArrayList as class objects
                 for (int i = 0; i < jArray.length(); i++) {
                     JSONObject json_data = jArray.getJSONObject(i);
-                    WordPreview wordPreview = new WordPreview("null", "null");
+                    WordPreview wordPreview = new WordPreview("null", "null", 0);
 
                     wordPreview.setName(json_data.getString("WordName"));
                     wordPreview.setDefinition(json_data.getString("Definition"));
+                    wordPreview.setLikes(json_data.getInt("Likes"));
 
                     data.add(wordPreview);
                 }
 
                 // Setup and Handover data to recyclerview
                 browseTable = (RecyclerView) findViewById(R.id.wordTable);
+                browseTable.addItemDecoration(new DividerItemDecoration(BrowseActivity.this, DividerItemDecoration.VERTICAL));
                 wordPreviewAdapter = new WordPreviewAdapter(BrowseActivity.this, data);
                 wordPreviewAdapter.setClickListener(BrowseActivity.this); // Bind the listener
                 browseTable.setAdapter(wordPreviewAdapter);
