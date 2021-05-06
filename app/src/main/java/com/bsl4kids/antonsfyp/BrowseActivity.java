@@ -1,5 +1,6 @@
 package com.bsl4kids.antonsfyp;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -7,10 +8,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -43,6 +47,7 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
     private String username = "null";
     private boolean tag_search_status = false;
     private String tagName = "null";
+    private String sortMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +55,11 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
         setContentView(R.layout.activity_browse);
 
         searchTerms = getIntent().getStringExtra("EXTRA_SEARCH_TERMS");
+        sortMode = getIntent().getStringExtra("SORT_BY");
+        System.out.println("Sort mode " + sortMode);
         new FetchTask().execute();
 
+        //Handles searching using the search bar
         SearchView searchView = findViewById(R.id.BrowseSearch);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -61,6 +69,7 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
                 intent.putExtra("EXTRA_SEARCH_TERMS", query);
                 intent.putExtra("USERNAME", username);
                 intent.putExtra("LOGIN_STATUS", login_status);
+                intent.putExtra("SORT_BY", "A");
                 startActivity(intent);
 
                 return false;
@@ -78,11 +87,14 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
             username = getIntent().getStringExtra("USERNAME");
         }
 
-        //Check if this is from a tag click redirect, if so, get the tag name and disable the search bar
+        //Check if this is from a tag click redirect, if so, get the tag name and disable the search bar and sort button
         tag_search_status = getIntent().getBooleanExtra("TAG_SEARCH",false);
         if(tag_search_status == true) {
             tagName = getIntent().getStringExtra("EXTRA_TAG_NAME");
             searchView.setVisibility(View.GONE);
+            //TODO Get sorting working for tags
+            ImageButton sortButton = (ImageButton) findViewById(R.id.sortButton);
+            sortButton.setVisibility(View.GONE);
         }
     }
 
@@ -97,6 +109,43 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
         intent.putExtra("USERNAME", username);
         intent.putExtra("LOGIN_STATUS", login_status);
         startActivity(intent);
+    }
+
+    //Creates a dialog to select how the search results are sorted
+    public void sortDialog(View view) {
+        String[] options = {"A-Z", "Z-A", "Most Likes", "Fewest Likes"};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Sort Mode:");
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //Reload BrowseActivity with
+                Intent intent = new Intent (BrowseActivity.this, BrowseActivity.class);
+                intent.putExtra("EXTRA_SEARCH_TERMS", searchTerms);
+                intent.putExtra("USERNAME", username);
+                intent.putExtra("LOGIN_STATUS", login_status);
+                intent.putExtra("TAG_SEARCH", tag_search_status);
+                intent.putExtra("EXTRA_TAG_NAME", tagName);
+
+                if(which == 0) {
+                    intent.putExtra("SORT_BY", "A");
+                }
+                else if(which == 1) {
+                    intent.putExtra("SORT_BY", "Z");
+                }
+                else if(which == 2) {
+                    intent.putExtra("SORT_BY", "ML");
+                }
+                else if(which == 3) {
+                    intent.putExtra("SORT_BY", "FL");
+                }
+
+                startActivity(intent);
+                finish();
+            }
+        });
+        builder.show();
     }
 
     @Override
@@ -138,13 +187,12 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
             }
         }
 
-        //Gets all words and definitions from database
+        //Gets all words from the database
         protected String getAllWords() {
             try {
 
                 // Enter URL address where your json file resides
                 // Even you can make call to php file which returns json data
-                //url = new URL("http://192.168.1.173:8080/FYP_Scripts/fetchWordBrowse.php");
                 url = new URL("http://" + MainActivity.ip_address + "/FYP_Scripts/fetchWordBrowse.php");
 
             } catch (MalformedURLException e) {
@@ -153,6 +201,7 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
                 return e.toString();
             }
 
+            /**
             try {
 
                 // Setup HttpURLConnection class to send and receive data from php and mysql
@@ -201,21 +250,7 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
             } finally {
                 conn.disconnect();
             }
-        }
-
-        //Request regular text search
-        protected String getSearchResults() {
-            try {
-
-                // Enter URL address where your json file resides
-                // Even you can make call to php file which returns json data
-                url = new URL("http://192.168.1.173:8080/FYP_Scripts/searchDB.php");
-
-            } catch (MalformedURLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-                return e.toString();
-            }
+             */
 
             try {
 
@@ -235,7 +270,7 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
 
             try {
                 //Encode data to post
-                String post_data = URLEncoder.encode("wordName","UTF-8")+"="+URLEncoder.encode(searchTerms,"UTF-8");
+                String post_data = URLEncoder.encode("sortMode","UTF-8")+"="+URLEncoder.encode(sortMode,"UTF-8");
 
                 //Send encoded data
                 OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
@@ -267,12 +302,12 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
         }
 
         //Request regular text search
-        protected String getTagWords() {
+        protected String getSearchResults() {
             try {
 
                 // Enter URL address where your json file resides
                 // Even you can make call to php file which returns json data
-                url = new URL("http://192.168.1.173:8080/FYP_Scripts/searchByTag.php");
+                url = new URL("http://" + MainActivity.ip_address + "/FYP_Scripts/searchDB.php");
 
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
@@ -298,7 +333,72 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
 
             try {
                 //Encode data to post
-                String post_data = URLEncoder.encode("tagName","UTF-8")+"="+URLEncoder.encode(tagName,"UTF-8");
+                String post_data = URLEncoder.encode("wordName","UTF-8")+"="+URLEncoder.encode(searchTerms,"UTF-8")+"&"
+                        +URLEncoder.encode("sortMode","UTF-8")+"="+URLEncoder.encode(sortMode,"UTF-8");
+
+                //Send encoded data
+                OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+
+                wr.write(post_data);
+                wr.flush();
+
+                // Read data sent from server
+                InputStream input = conn.getInputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+                StringBuilder result = new StringBuilder();
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+                    result.append(line);
+                }
+
+                System.out.println(result);
+
+                // Pass data to onPostExecute method
+                return (result.toString());
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                return e.toString();
+            } finally {
+                conn.disconnect();
+            }
+        }
+
+        //Request all words associated with a given tag
+        protected String getTagWords() {
+            try {
+
+                // Enter URL address where your json file resides
+                // Even you can make call to php file which returns json data
+                url = new URL("http://" + MainActivity.ip_address + "/FYP_Scripts/searchByTag.php");
+
+            } catch (MalformedURLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                return e.toString();
+            }
+
+            try {
+
+                // Setup HttpURLConnection class to send and receive data from php and mysql
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(15000);
+                conn.setConnectTimeout(10000);
+
+                // setDoOutput to true as we receive data from json file
+                conn.setDoOutput(true);
+
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+                return e1.toString();
+            }
+
+            try {
+                //Encode data to post
+                String post_data = URLEncoder.encode("tagName","UTF-8")+"="+URLEncoder.encode(tagName,"UTF-8")+"&"
+                        +URLEncoder.encode("sortMode","UTF-8")+"="+URLEncoder.encode(sortMode,"UTF-8");
 
                 //Send encoded data
                 OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());

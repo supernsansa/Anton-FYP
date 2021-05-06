@@ -100,6 +100,7 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
         intent.putExtra("EXTRA_SEARCH_TERMS",searchTerms);
         intent.putExtra("USERNAME", username);
         intent.putExtra("LOGIN_STATUS", login_status);
+        intent.putExtra("SORT_BY", "A");
         startActivity(intent);
     }
 

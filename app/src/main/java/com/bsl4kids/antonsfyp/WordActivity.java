@@ -205,7 +205,7 @@ public class WordActivity extends AppCompatActivity {
 
                 // Enter URL address where your json file resides
                 // Even you can make call to php file which returns json data
-                url = new URL("http://192.168.1.173:8080/FYP_Scripts/fetchWordInfo.php");
+                url = new URL("http://" + MainActivity.ip_address + "/FYP_Scripts/fetchWordInfo.php");
 
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
@@ -331,7 +331,7 @@ public class WordActivity extends AppCompatActivity {
 
                 // Enter URL address where your json file resides
                 // Even you can make call to php file which returns json data
-                url = new URL("http://192.168.1.173:8080/FYP_Scripts/fetchVideos.php");
+                url = new URL("http://" + MainActivity.ip_address + "/FYP_Scripts/fetchVideos.php");
 
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
@@ -418,7 +418,7 @@ public class WordActivity extends AppCompatActivity {
 
                 // Loop through videos and add to exoplayer playlist
                 for (Video video: videoList) {
-                    String uriPath = ("http://192.168.1.173:8080/FYP_Scripts/Videos/" + video.getFileName() + ".mp4");
+                    String uriPath = ("http://" + MainActivity.ip_address + "/FYP_Scripts/Videos/" + video.getFileName() + ".mp4");
                     Uri uri = Uri.parse(uriPath);
                     // Build the media item.
                     MediaItem mediaItem = MediaItem.fromUri(uri);
@@ -466,7 +466,7 @@ public class WordActivity extends AppCompatActivity {
 
                 // Enter URL address where your json file resides
                 // Even you can make call to php file which returns json data
-                url = new URL("http://192.168.1.173:8080/FYP_Scripts/fetchLikeStatus.php");
+                url = new URL("http://" + MainActivity.ip_address + "/FYP_Scripts/fetchLikeStatus.php");
 
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
@@ -567,11 +567,11 @@ public class WordActivity extends AppCompatActivity {
             try {
 
                 if(liked == true) {
-                    url = new URL("http://192.168.1.173:8080/FYP_Scripts/unLike.php");
+                    url = new URL("http://" + MainActivity.ip_address + "/FYP_Scripts/unLike.php");
                     word.setNumLikes(word.getNumLikes()-1);
                 }
                 else {
-                    url = new URL("http://192.168.1.173:8080/FYP_Scripts/addLike.php");
+                    url = new URL("http://" + MainActivity.ip_address + "/FYP_Scripts/addLike.php");
                     word.setNumLikes(word.getNumLikes()+1);
                 }
 

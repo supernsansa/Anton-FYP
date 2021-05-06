@@ -44,4 +44,6 @@
     <string name="set_image">Set Image</string>
     <string name="select_image_title">Select Image</string>
     <string name="select_gallery_img_button">Select Image From Gallery</string>
+    <string name="text_search_button">Text Search</string>
+    <string name="categories_button">Categories</string>
 </resources>

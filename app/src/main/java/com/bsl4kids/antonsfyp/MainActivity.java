@@ -65,16 +65,17 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("LOGIN_STATUS", login_status);
         intent.putExtra("EXTRA_SEARCH_TERMS", "*");
         intent.putExtra("TAG_SEARCH", false);
+        intent.putExtra("SORT_BY", "A");
         startActivity(intent);
     }
 
     //Takes the user to the search by tag screen
     public void moveToTagBrowseMenu(View view) {
-        //TODO change this to new browse tag activity
         Intent intent = new Intent (this, BrowseTagActivity.class);
         intent.putExtra("USERNAME", username);
         intent.putExtra("LOGIN_STATUS", login_status);
         intent.putExtra("EXTRA_SEARCH_TERMS", "*");
+        intent.putExtra("SORT_BY", "A");
         startActivity(intent);
     }
 
