@@ -13,36 +13,37 @@
         android:layout_marginTop="16dp"
         android:text="@string/register_title"
         android:textAlignment="viewStart"
+        android:textColor="@color/design_default_color_on_secondary"
         android:textSize="36sp"
         android:textStyle="bold|italic"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.242"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/editTextUsername"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="100dp"
+        android:layout_width="250dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="80dp"
+        android:background="@drawable/my_border"
         android:ems="10"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toTopOf="@+id/register_button_2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/username_title"
-        app:layout_constraintVertical_bias="0.2" />
+        app:layout_constraintVertical_bias="0.104" />
 
     <TextView
         android:id="@+id/email_title_2"
         android:layout_width="91dp"
         android:layout_height="33dp"
-        android:layout_marginTop="56dp"
+        android:layout_marginTop="64dp"
         android:text="@string/email_title"
         android:textAlignment="center"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.237"
+        app:layout_constraintHorizontal_bias="0.25"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/register_title" />
 
@@ -50,7 +51,7 @@
         android:id="@+id/pass_title_2"
         android:layout_width="141dp"
         android:layout_height="31dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="12dp"
         android:text="@string/password_title"
         android:textAlignment="center"
         android:textSize="18sp"
@@ -62,24 +63,25 @@
 
     <TextView
         android:id="@+id/username_title"
-        android:layout_width="122dp"
-        android:layout_height="35dp"
+        android:layout_width="142dp"
+        android:layout_height="34dp"
         android:layout_marginTop="16dp"
         android:text="@string/username_title"
         android:textAlignment="center"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.262"
+        app:layout_constraintHorizontal_bias="0.256"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextPassword2" />
 
     <EditText
         android:id="@+id/editTextPassword2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="100dp"
+        android:layout_width="250dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="80dp"
         android:layout_marginTop="12dp"
+        android:background="@drawable/my_border"
         android:ems="10"
         android:inputType="textPassword"
         app:layout_constraintStart_toStartOf="parent"
@@ -87,10 +89,11 @@
 
     <EditText
         android:id="@+id/editTextEmail2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="100dp"
+        android:layout_width="250dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="80dp"
         android:layout_marginTop="8dp"
+        android:background="@drawable/my_border"
         android:ems="10"
         android:inputType="textEmailAddress"
         app:layout_constraintStart_toStartOf="parent"
@@ -100,11 +103,22 @@
         android:id="@+id/register_button_2"
         android:layout_width="170dp"
         android:layout_height="45dp"
-        android:layout_marginBottom="208dp"
+        android:layout_marginBottom="184dp"
         android:onClick="registerAccount"
         android:text="@string/register_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/consentText"
+        android:layout_width="302dp"
+        android:layout_height="68dp"
+        android:text="@string/consent_text"
+        app:layout_constraintBottom_toTopOf="@+id/register_button_2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextUsername" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,18 +5,23 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.ui.StyledPlayerView;
 
@@ -49,6 +54,7 @@ public class WordActivity extends AppCompatActivity {
     private boolean login_status = false;
     private String username = "null";
     private boolean liked = false;
+    private URL imageURL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +93,10 @@ public class WordActivity extends AppCompatActivity {
             Button reportButton = (Button) findViewById(R.id.report_button);
             reportButton.getBackground().setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
             reportButton.setClickable(false);
+            //Disable and gray out add image button
+            Button imageButton = (Button) findViewById(R.id.imageButton);
+            imageButton.getBackground().setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
+            imageButton.setClickable(false);
         }
     }
 
@@ -124,6 +134,18 @@ public class WordActivity extends AppCompatActivity {
         intent.putExtra("CURRENT_DESC" , word.getDefinition());
         intent.putExtra("WORD_ID" , word.getWordID());
         intent.putExtra("NUM_VIDEOS" , videoList.size());
+        intent.putExtra("USERNAME", username);
+        intent.putExtra("LOGIN_STATUS", login_status);
+        startActivity(intent);
+    }
+
+    //Takes user to set image menu
+    public void setImage(View view) {
+        player.release();
+        Intent intent = new Intent (this, SetImageActivity.class);
+        intent.putExtra("WORD_NAME" , wordName);
+        intent.putExtra("CURRENT_DESC" , word.getDefinition());
+        intent.putExtra("WORD_ID" , word.getWordID());
         intent.putExtra("USERNAME", username);
         intent.putExtra("LOGIN_STATUS", login_status);
         startActivity(intent);
@@ -261,6 +283,7 @@ public class WordActivity extends AppCompatActivity {
                 word.setDateAdded(json_data.getString("DateAdded"));
                 word.setNumLikes(json_data.getInt("Likes"));
                 word.setWordID(json_data.getInt("WordID"));
+                imageURL = new URL("http://" + MainActivity.ip_address + "/FYP_Scripts/Images/" + json_data.getString("ImageFilename"));
 
                 //Place text in appropriate UI elements
                 TextView wordTitle = (TextView) findViewById(R.id.WordNameText);
@@ -270,14 +293,13 @@ public class WordActivity extends AppCompatActivity {
                 wordDef.setText(word.getDefinition());
                 TextView numLikes = (TextView) findViewById(R.id.num_likes);
                 numLikes.setText(String.valueOf(word.getNumLikes()) + "\uD83D\uDC4D");
-                //TODO Username and date uploaded (not mandatory)
-                //TextView dateUploaded = (TextView) findViewById(R.id.DateText);
-                //dateUploaded.setText(word.getDateAdded());
 
                 //Move to VideoTask
                 new VideoTask().execute();
+                //Also start imagetask
+                new GetImageTask().execute();
 
-            } catch (JSONException e) {
+            } catch (JSONException | MalformedURLException e) {
                 Toast.makeText(WordActivity.this, e.toString(), Toast.LENGTH_LONG).show();
             }
 
@@ -404,6 +426,8 @@ public class WordActivity extends AppCompatActivity {
                     player.addMediaItem(mediaItem);
                     //Mute the player
                     player.setVolume(0f);
+                    //Set player loop
+                    player.setRepeatMode(Player.REPEAT_MODE_ONE);
                 }
 
                 // Prepare the player.
@@ -618,6 +642,37 @@ public class WordActivity extends AppCompatActivity {
 
             new LikeStatusTask().execute();
         }
+    }
+
+    //Thread for retrieving thumbnails
+    public class GetImageTask extends AsyncTask<String, Void, Bitmap> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... urls) {
+            Bitmap bmp = null;
+            try {
+                bmp = BitmapFactory.decodeStream(imageURL.openConnection().getInputStream());
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+                bmp = null;
+            }
+            return bmp;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap result) {
+            ImageView image = (ImageView) findViewById(R.id.image);
+            if(result != null) {
+                image.setImageBitmap(result);
+            }
+        }
+
     }
 
 }

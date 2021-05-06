@@ -15,9 +15,20 @@ class UploadUtility(activity: Activity) {
 
     var activity = activity;
     var dialog: ProgressDialog? = null
-    var serverURL: String = "http://192.168.1.173:8080/FYP_Scripts/upload.php"
+    //var serverURL: String = "http://192.168.1.173:8080/FYP_Scripts/upload.php"
+    var serverURL: String = "http://" + MainActivity.ip_address + "FYP_Scripts/upload.php"
     var serverUploadDirectoryPath: String = "http://192.168.1.173:8080/Videos/"
     val client = OkHttpClient()
+
+    //Use this method if uploading an image instead of a video
+    fun setImageMode(image: Boolean) {
+        if(image == true) {
+            serverURL = "http://" + MainActivity.ip_address + "/FYP_Scripts/uploadImage.php"
+        }
+        else {
+            return
+        }
+    }
 
     fun uploadFile(sourceFilePath: String, uploadedFileName: String? = null) {
         uploadFile(File(sourceFilePath), uploadedFileName)
@@ -49,8 +60,8 @@ class UploadUtility(activity: Activity) {
                 val response: Response = client.newCall(request).execute()
 
                 if (response.isSuccessful) {
-                    Log.d("File upload","success, path: $serverUploadDirectoryPath$fileName")
-                    showToast("File uploaded successfully at $serverUploadDirectoryPath$fileName")
+                    Log.d("File upload","success")
+                    showToast("File uploaded successfully")
                     toggleProgressDialog(false)
                     return "success"
                 } else {

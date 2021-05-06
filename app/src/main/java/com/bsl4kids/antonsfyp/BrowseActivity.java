@@ -144,7 +144,8 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
 
                 // Enter URL address where your json file resides
                 // Even you can make call to php file which returns json data
-                url = new URL("http://192.168.1.173:8080/FYP_Scripts/fetchWordBrowse.php");
+                //url = new URL("http://192.168.1.173:8080/FYP_Scripts/fetchWordBrowse.php");
+                url = new URL("http://" + MainActivity.ip_address + "/FYP_Scripts/fetchWordBrowse.php");
 
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
@@ -335,7 +336,6 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
 
             pdLoading.dismiss();
 
-            pdLoading.dismiss();
             try {
 
                 JSONArray jArray = new JSONArray(result);
@@ -343,10 +343,9 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
                 // Extract data from json and store into ArrayList as class objects
                 for (int i = 0; i < jArray.length(); i++) {
                     JSONObject json_data = jArray.getJSONObject(i);
-                    WordPreview wordPreview = new WordPreview("null", "null", 0);
+                    WordPreview wordPreview = new WordPreview("null", 0);
 
                     wordPreview.setName(json_data.getString("WordName"));
-                    wordPreview.setDefinition(json_data.getString("Definition"));
                     wordPreview.setLikes(json_data.getInt("Likes"));
 
                     data.add(wordPreview);

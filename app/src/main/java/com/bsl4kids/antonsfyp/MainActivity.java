@@ -10,13 +10,14 @@ import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-    //TODO Redo buttons and colour scheme
-
     private boolean login_status = false;
     private String username = "null";
+    //Change this to your IP address (on Windows use ipconfig on cmd and find "default gateway"), the port shouldn't be needed (depends on your setup).
+    public static String ip_address = "192.168.1.173:8080";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
             Button loginButton = (Button) findViewById(R.id.profile_button);
             //If user is logged in, the login button should say logout instead
             loginButton.setText("Logout");
+            //Display username
+            TextView usernameText = (TextView) findViewById(R.id.username);
+            usernameText.setText(username);
         }
         //If user isn't logged in, add button should be restricted
         else {

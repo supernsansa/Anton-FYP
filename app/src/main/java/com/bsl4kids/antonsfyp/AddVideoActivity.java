@@ -1,4 +1,4 @@
-package com.bsl4kids.antonsfyp;
+ package com.bsl4kids.antonsfyp;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -42,7 +42,6 @@ import org.jibble.simpleftp.*;
 public class AddVideoActivity extends AppCompatActivity {
 
     private static final int SELECT_VIDEO = 3;
-    private String selectedPath = "";
     private static Intent VideoFileData;
     private String wordName;
     private String wordDesc;
@@ -53,8 +52,6 @@ public class AddVideoActivity extends AppCompatActivity {
     private String username = "null";
     UploadUtility uploadUtility;
     private int wordID;
-    private Uri fileUri;
-    private File file;
     private SimpleExoPlayer player;
 
     @Override
@@ -94,7 +91,6 @@ public class AddVideoActivity extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(intent,"Select a Video "), SELECT_VIDEO);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -110,11 +106,16 @@ public class AddVideoActivity extends AppCompatActivity {
     }
 
     public void uploadData(View view) {
-        if (type.equals("add")) {
-            new AddWordTask().execute();
+        if (VideoFileData != null) {
+            if (type.equals("add")) {
+                new AddWordTask().execute();
+            }
+            else {
+                new UploadTask().execute();
+            }
         }
         else {
-            new UploadTask().execute();
+            //TODO Make dialog
         }
     }
 
@@ -349,7 +350,7 @@ public class AddVideoActivity extends AppCompatActivity {
         }
     }
 
-    //Opens a thread to create an entry into the videodb
+    //Opens a thread to upload
     public class UploadTask extends AsyncTask<String, String, String> {
 
         ProgressDialog pdLoading = new ProgressDialog(AddVideoActivity.this);
@@ -357,45 +358,10 @@ public class AddVideoActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-
-            /**
-            //Show loading dialog
-            pdLoading.setMessage("\tUploading...");
-            pdLoading.setCancelable(false);
-            pdLoading.show();
-             */
-
         }
 
         @Override
         protected String doInBackground(String... strings) {
-            /**
-            try
-            {
-                SimpleFTP ftp = new SimpleFTP();
-
-                // Connect to an FTP server on port 21.
-                ftp.connect("unix.sussex.ac.uk", 22, "anoc20", "Kasuba123!");
-
-                // Set binary mode.
-                ftp.bin();
-
-                // Change to a new working directory on the FTP server.
-                //ftp.cwd("");
-
-                // You can also upload from an InputStream, e.g.
-                ftp.stor(new FileInputStream(file), filename);
-
-                // Quit from the FTP server.
-                ftp.disconnect();
-                return "success";
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-                return "failure";
-            }
-             */
             return uploadUtility.uploadFile(VideoFileData.getData(),(filename + ".mp4"));
         }
 

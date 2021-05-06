@@ -39,4 +39,9 @@
     <string name="add_tag_title">Add Tag</string>
     <string name="word_default_title">Word Title</string>
     <string name="num_likes_default">num likes</string>
+    <string name="consent_text">By registering an account, I hereby confirm that I am over the age of 18 and consent to the free distribution of any and all videos I upload to BSL4Kids.</string>
+    <string name="thumb_text">Image</string>
+    <string name="set_image">Set Image</string>
+    <string name="select_image_title">Select Image</string>
+    <string name="select_gallery_img_button">Select Image From Gallery</string>
 </resources>
