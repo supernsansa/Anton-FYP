@@ -48,6 +48,7 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
     private String username = "null";
     private boolean word_spec = false;
     private String word_name = "null";
+    private boolean netError;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,7 +180,7 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
-                netErrorDialog();
+                netError = true;
                 return e.toString();
             }
 
@@ -197,7 +198,7 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
-                netErrorDialog();
+                netError = true;
                 return e1.toString();
             }
 
@@ -228,7 +229,7 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
 
             } catch (IOException e) {
                 e.printStackTrace();
-                netErrorDialog();
+                netError = true;
                 return e.toString();
             } finally {
                 conn.disconnect();
@@ -246,7 +247,7 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
-                netErrorDialog();
+                netError = true;
                 return e.toString();
             }
 
@@ -263,7 +264,7 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
-                netErrorDialog();
+                netError = true;
                 return e1.toString();
             }
 
@@ -294,7 +295,7 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
 
             } catch (IOException e) {
                 e.printStackTrace();
-                netErrorDialog();
+                netError = true;
                 return e.toString();
             } finally {
                 conn.disconnect();
@@ -312,7 +313,7 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
-                netErrorDialog();
+                netError = true;
                 return e.toString();
             }
 
@@ -329,7 +330,7 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
-                netErrorDialog();
+                netError = true;
                 return e1.toString();
             }
 
@@ -360,7 +361,7 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
 
             } catch (IOException e) {
                 e.printStackTrace();
-                netErrorDialog();
+                netError = true;
                 return e.toString();
             } finally {
                 conn.disconnect();
@@ -384,6 +385,11 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
                     wordPreview.setLikes(-1);
 
                     data.add(wordPreview);
+                }
+
+                //If a network error occurs
+                if(netError == true) {
+                    netErrorDialog();
                 }
 
                 //If no tags are found
@@ -416,6 +422,7 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
 
             } catch (JSONException e) {
                 Toast.makeText(BrowseTagActivity.this, e.toString(), Toast.LENGTH_LONG).show();
+                netErrorDialog();
             }
 
             conn.disconnect();

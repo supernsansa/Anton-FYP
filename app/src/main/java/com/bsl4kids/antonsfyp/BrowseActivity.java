@@ -48,6 +48,7 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
     private boolean tag_search_status = false;
     private String tagName = "null";
     private String sortMode;
+    private boolean netError;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -215,7 +216,7 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
-                netErrorDialog();
+                netError = true;
                 return e.toString();
             }
 
@@ -232,7 +233,7 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
-                netErrorDialog();
+                netError = true;
                 return e1.toString();
             }
 
@@ -263,7 +264,7 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
 
             } catch (IOException e) {
                 e.printStackTrace();
-                netErrorDialog();
+                netError = true;
                 return e.toString();
             } finally {
                 conn.disconnect();
@@ -281,7 +282,7 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
-                netErrorDialog();
+                netError = true;
                 return e.toString();
             }
 
@@ -298,7 +299,7 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
-                netErrorDialog();
+                netError = true;
                 return e1.toString();
             }
 
@@ -330,7 +331,7 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
 
             } catch (IOException e) {
                 e.printStackTrace();
-                netErrorDialog();
+                netError = true;
                 return e.toString();
             } finally {
                 conn.disconnect();
@@ -348,7 +349,7 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
-                netErrorDialog();
+                netError = true;
                 return e.toString();
             }
 
@@ -365,7 +366,7 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
-                netErrorDialog();
+                netError = true;
                 return e1.toString();
             }
 
@@ -397,7 +398,7 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
 
             } catch (IOException e) {
                 e.printStackTrace();
-                netErrorDialog();
+                netError = true;
                 return e.toString();
             } finally {
                 conn.disconnect();
@@ -424,6 +425,11 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
                     wordPreview.setLikes(json_data.getInt("Likes"));
 
                     data.add(wordPreview);
+                }
+
+                //If a network error occurs
+                if(netError == true) {
+                    netErrorDialog();
                 }
 
                 //If no tags are found
