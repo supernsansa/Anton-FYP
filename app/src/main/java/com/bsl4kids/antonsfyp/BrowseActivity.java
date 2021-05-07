@@ -87,14 +87,11 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
             username = getIntent().getStringExtra("USERNAME");
         }
 
-        //Check if this is from a tag click redirect, if so, get the tag name and disable the search bar and sort button
+        //Check if this is from a tag click redirect, if so, get the tag name and disable the search bar
         tag_search_status = getIntent().getBooleanExtra("TAG_SEARCH",false);
         if(tag_search_status == true) {
             tagName = getIntent().getStringExtra("EXTRA_TAG_NAME");
             searchView.setVisibility(View.GONE);
-            //TODO Get sorting working for tags
-            ImageButton sortButton = (ImageButton) findViewById(R.id.sortButton);
-            sortButton.setVisibility(View.GONE);
         }
     }
 
@@ -148,6 +145,26 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
         builder.show();
     }
 
+    //Creates an alert dialog
+    public void netErrorDialog() {
+        android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder(BrowseActivity.this);
+        alertDialogBuilder.setTitle("Error:");
+        alertDialogBuilder.setMessage("Please check your internet connection");
+        alertDialogBuilder.setCancelable(false);
+
+        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                //Return to previous activity
+                finish();
+            }
+        });
+
+        android.app.AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
     @Override
     public void onBackPressed() {
         finish();
@@ -198,59 +215,9 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+                netErrorDialog();
                 return e.toString();
             }
-
-            /**
-            try {
-
-                // Setup HttpURLConnection class to send and receive data from php and mysql
-                conn = (HttpURLConnection) url.openConnection();
-                conn.setReadTimeout(15000);
-                conn.setConnectTimeout(10000);
-                conn.setRequestMethod("GET");
-
-                // setDoOutput to true as we receive data from json file
-                conn.setDoOutput(true);
-
-            } catch (IOException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-                return e1.toString();
-            }
-
-            try {
-
-                int response_code = conn.getResponseCode();
-
-                // Check if successful connection made
-                if (response_code == HttpURLConnection.HTTP_OK) {
-
-                    // Read data sent from server
-                    InputStream input = conn.getInputStream();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-                    StringBuilder result = new StringBuilder();
-                    String line;
-
-                    while ((line = reader.readLine()) != null) {
-                        result.append(line);
-                    }
-
-                    // Pass data to onPostExecute method
-                    return (result.toString());
-
-                } else {
-
-                    return ("unsuccessful");
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                return e.toString();
-            } finally {
-                conn.disconnect();
-            }
-             */
 
             try {
 
@@ -265,6 +232,7 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
+                netErrorDialog();
                 return e1.toString();
             }
 
@@ -295,6 +263,7 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
 
             } catch (IOException e) {
                 e.printStackTrace();
+                netErrorDialog();
                 return e.toString();
             } finally {
                 conn.disconnect();
@@ -312,6 +281,7 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+                netErrorDialog();
                 return e.toString();
             }
 
@@ -328,6 +298,7 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
+                netErrorDialog();
                 return e1.toString();
             }
 
@@ -359,6 +330,7 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
 
             } catch (IOException e) {
                 e.printStackTrace();
+                netErrorDialog();
                 return e.toString();
             } finally {
                 conn.disconnect();
@@ -376,6 +348,7 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+                netErrorDialog();
                 return e.toString();
             }
 
@@ -392,6 +365,7 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
+                netErrorDialog();
                 return e1.toString();
             }
 
@@ -423,6 +397,7 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
 
             } catch (IOException e) {
                 e.printStackTrace();
+                netErrorDialog();
                 return e.toString();
             } finally {
                 conn.disconnect();
@@ -451,6 +426,26 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
                     data.add(wordPreview);
                 }
 
+                //If no tags are found
+                if(data.size() == 0) {
+                    android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder(BrowseActivity.this);
+                    alertDialogBuilder.setTitle("Error:");
+                    alertDialogBuilder.setMessage("No words found");
+                    alertDialogBuilder.setCancelable(false);
+
+                    alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface arg0, int arg1) {
+                            //Return to previous activity
+                            finish();
+                        }
+                    });
+
+                    android.app.AlertDialog alertDialog = alertDialogBuilder.create();
+                    alertDialog.show();
+                }
+
                 // Setup and Handover data to recyclerview
                 browseTable = (RecyclerView) findViewById(R.id.wordTable);
                 browseTable.addItemDecoration(new DividerItemDecoration(BrowseActivity.this, DividerItemDecoration.VERTICAL));
@@ -461,6 +456,7 @@ public class BrowseActivity extends AppCompatActivity implements OnItemClickList
 
             } catch (JSONException e) {
                 Toast.makeText(BrowseActivity.this, e.toString(), Toast.LENGTH_LONG).show();
+                netErrorDialog();
             }
 
             conn.disconnect();

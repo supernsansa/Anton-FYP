@@ -85,7 +85,23 @@ public class SetImageActivity extends AppCompatActivity {
         if (imageFileData != null) {
             new UploadImageTask().execute();
         } else {
-            //TODO Make dialog for no file
+            //If user has not provided an image, display an error message
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setTitle("Error:");
+            alertDialogBuilder.setMessage("Please provide an image");
+            alertDialogBuilder.setCancelable(false);
+
+            alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface arg0, int arg1) {
+                    //Do nothing
+                    return;
+                }
+            });
+
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
         }
     }
 

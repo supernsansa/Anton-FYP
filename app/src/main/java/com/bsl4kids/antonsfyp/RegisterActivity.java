@@ -89,7 +89,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                 // Enter URL address where your json file resides
                 // Even you can make call to php file which returns json data
-                url = new URL("http://192.168.1.173:8080/FYP_Scripts/register.php");
+                url = new URL("http://" + MainActivity.ip_address + "/FYP_Scripts/register.php");
 
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block

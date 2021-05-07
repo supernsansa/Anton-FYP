@@ -115,7 +115,23 @@ public class AddVideoActivity extends AppCompatActivity {
             }
         }
         else {
-            //TODO Make dialog
+            //If user has not provided a video, display an error message
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AddVideoActivity.this);
+            alertDialogBuilder.setTitle("Error:");
+            alertDialogBuilder.setMessage("Please provide a video");
+            alertDialogBuilder.setCancelable(false);
+
+            alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface arg0, int arg1) {
+                    //Do nothing
+                    return;
+                }
+            });
+
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
         }
     }
 

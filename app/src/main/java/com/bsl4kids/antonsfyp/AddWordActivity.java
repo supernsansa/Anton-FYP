@@ -42,26 +42,27 @@ public class AddWordActivity extends AppCompatActivity {
     }
 
     //Takes user input and adds a word entry to database
-    //TODO Moar validation
     public void addWordToDB(View view) {
         //Get editText boxes
         EditText editWordName = (EditText) findViewById(R.id.editWordName);
         //Extract strings from editText
         wordName = editWordName.getText().toString();
 
-        if(!wordName.equals("")) {
+        if(wordName.trim().length() > 0 && wordName != null) {
             //Probe DB to check availability
             new ProbeTask().execute();
         }
         else {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-            alertDialogBuilder.setTitle("Please provide a word/phrase");
+            alertDialogBuilder.setTitle("Error:");
+            alertDialogBuilder.setMessage("Please provide a word/phrase");
             alertDialogBuilder.setCancelable(false);
 
             alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 
                 @Override
                 public void onClick(DialogInterface arg0, int arg1) {
+                    //Do nothing
                     return;
                 }
             });
@@ -94,7 +95,7 @@ public class AddWordActivity extends AppCompatActivity {
 
                 // Enter URL address where your json file resides
                 // Even you can make call to php file which returns json data
-                url = new URL("http://192.168.1.173:8080/FYP_Scripts/probeDB.php");
+                url = new URL("http://" + MainActivity.ip_address + "/FYP_Scripts/probeDB.php");
 
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
@@ -155,7 +156,6 @@ public class AddWordActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             pdLoading.dismiss();
-            pdLoading.dismiss();
             //If word isn't already in the db...
             if (result.equals("proceed")) {
                 //Take user to next activity
@@ -166,7 +166,7 @@ public class AddWordActivity extends AppCompatActivity {
                 intent.putExtra("LOGIN_STATUS", login_status);
                 startActivity(intent);
             }
-            else {
+            else if (result.equals("exists")) {
                 //Display dialog to notify user that the word already exists
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AddWordActivity.this);
                 alertDialogBuilder.setTitle("An entry for this word already exists");
@@ -176,6 +176,25 @@ public class AddWordActivity extends AppCompatActivity {
 
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
+                        return;
+                    }
+                });
+
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+            }
+            else {
+                //If some unknown error occurs
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AddWordActivity.this);
+                alertDialogBuilder.setTitle("Error:");
+                alertDialogBuilder.setMessage("Please check your internet connection");
+                alertDialogBuilder.setCancelable(false);
+
+                alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        finish();
                         return;
                     }
                 });

@@ -43,13 +43,35 @@ public class AddTagActivity extends AppCompatActivity {
         }
     }
 
+    //Method for handling user input
     public void addTagSubmit(View view) {
         editTagText = (EditText) findViewById(R.id.editTagText);
         tagInput = editTagText.getText().toString();
 
-        new AddTagTask().execute();
+        if(tagInput.trim().length() == 0 || tagInput == null) {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AddTagActivity.this);
+            alertDialogBuilder.setTitle("Error:");
+            alertDialogBuilder.setMessage("Please enter a tag name");
+            alertDialogBuilder.setCancelable(false);
+
+            alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface arg0, int arg1) {
+                    //Do nothing
+                    return;
+                }
+            });
+
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+        }
+        else {
+            new AddTagTask().execute();
+        }
     }
 
+    //Opens a thread for sending info about a tag to be added to the server
     public class AddTagTask extends AsyncTask<String, String, String> {
 
         ProgressDialog pdLoading = new ProgressDialog(AddTagActivity.this);
@@ -73,7 +95,7 @@ public class AddTagActivity extends AppCompatActivity {
 
                 // Enter URL address where your json file resides
                 // Even you can make call to php file which returns json data
-                url = new URL("http://192.168.1.173:8080/FYP_Scripts/addTag.php");
+                url = new URL("http://" + MainActivity.ip_address + "/FYP_Scripts/addTag.php");
 
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block

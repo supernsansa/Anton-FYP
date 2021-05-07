@@ -5,12 +5,15 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -75,6 +78,10 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
             }
         });
 
+        //Disable the sort button
+        ImageButton sortButton = (ImageButton) findViewById(R.id.sortButton);
+        sortButton.setVisibility(View.GONE);
+
         //Get login status and username
         login_status = getIntent().getBooleanExtra("LOGIN_STATUS",false);
         if(login_status == true) {
@@ -109,6 +116,26 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
         finish();
     }
 
+    //Creates an alert dialog
+    public void netErrorDialog() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(BrowseTagActivity.this);
+        alertDialogBuilder.setTitle("Error:");
+        alertDialogBuilder.setMessage("Please check your internet connection");
+        alertDialogBuilder.setCancelable(false);
+
+        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                //Return to previous activity
+                finish();
+            }
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
     //Fetches all tag types from tagdb
     public class FetchTask extends AsyncTask<String, String, String> {
 
@@ -131,7 +158,7 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
         @Override
         protected String doInBackground(String... strings) {
             if (searchTerms.equals("*")) {
-                return getAllWords();
+                return getAllTags();
             }
             else if(word_spec == true) {
                 return getWordTags();
@@ -141,17 +168,18 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
             }
         }
 
-        //Gets all words and definitions from database
-        protected String getAllWords() {
+        //Gets all tags
+        protected String getAllTags() {
             try {
 
                 // Enter URL address where your json file resides
                 // Even you can make call to php file which returns json data
-                url = new URL("http://192.168.1.173:8080/FYP_Scripts/fetchTagBrowse.php");
+                url = new URL("http://" + MainActivity.ip_address + "/FYP_Scripts/fetchTagBrowse.php");
 
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+                netErrorDialog();
                 return e.toString();
             }
 
@@ -169,6 +197,7 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
+                netErrorDialog();
                 return e1.toString();
             }
 
@@ -193,12 +222,13 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
                     return (result.toString());
 
                 } else {
-
+                    netErrorDialog();
                     return ("unsuccessful");
                 }
 
             } catch (IOException e) {
                 e.printStackTrace();
+                netErrorDialog();
                 return e.toString();
             } finally {
                 conn.disconnect();
@@ -211,11 +241,12 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
 
                 // Enter URL address where your json file resides
                 // Even you can make call to php file which returns json data
-                url = new URL("http://192.168.1.173:8080/FYP_Scripts/searchTagDB.php");
+                url = new URL("http://" + MainActivity.ip_address + "/FYP_Scripts/searchTagDB.php");
 
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+                netErrorDialog();
                 return e.toString();
             }
 
@@ -232,6 +263,7 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
+                netErrorDialog();
                 return e1.toString();
             }
 
@@ -262,23 +294,25 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
 
             } catch (IOException e) {
                 e.printStackTrace();
+                netErrorDialog();
                 return e.toString();
             } finally {
                 conn.disconnect();
             }
         }
 
-        //Request regular text search
+        //Get all words associated with a tag
         protected String getWordTags() {
             try {
 
                 // Enter URL address where your json file resides
                 // Even you can make call to php file which returns json data
-                url = new URL("http://192.168.1.173:8080/FYP_Scripts/fetchTagWord.php");
+                url = new URL("http://" + MainActivity.ip_address + "/FYP_Scripts/fetchTagWord.php");
 
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+                netErrorDialog();
                 return e.toString();
             }
 
@@ -295,6 +329,7 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
+                netErrorDialog();
                 return e1.toString();
             }
 
@@ -325,6 +360,7 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
 
             } catch (IOException e) {
                 e.printStackTrace();
+                netErrorDialog();
                 return e.toString();
             } finally {
                 conn.disconnect();
@@ -333,10 +369,6 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
 
         @Override
         protected void onPostExecute(String result) {
-
-            //this method will be running on UI thread
-
-            pdLoading.dismiss();
 
             pdLoading.dismiss();
             try {
@@ -352,6 +384,26 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
                     wordPreview.setLikes(-1);
 
                     data.add(wordPreview);
+                }
+
+                //If no tags are found
+                if(data.size() == 0) {
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(BrowseTagActivity.this);
+                    alertDialogBuilder.setTitle("Error:");
+                    alertDialogBuilder.setMessage("No tags found");
+                    alertDialogBuilder.setCancelable(false);
+
+                    alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface arg0, int arg1) {
+                            //Return to previous activity
+                            finish();
+                        }
+                    });
+
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+                    alertDialog.show();
                 }
 
                 // Setup and Handover data to recyclerview

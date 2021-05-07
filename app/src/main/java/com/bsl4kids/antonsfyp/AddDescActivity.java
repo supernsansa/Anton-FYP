@@ -59,18 +59,38 @@ public class AddDescActivity extends AppCompatActivity {
         editWordDesc = (EditText) findViewById(R.id.editDefBox);
         descInput = editWordDesc.getText().toString();
 
-        if(type.equals("add")) {
-            //Take user to next activity
-            Intent intent = new Intent (this, AddVideoActivity.class);
-            intent.putExtra("WORD_NAME",wordName);
-            intent.putExtra("WORD_DESC",descInput);
-            intent.putExtra("TYPE",type);
-            intent.putExtra("USERNAME", username);
-            intent.putExtra("LOGIN_STATUS", login_status);
-            startActivity(intent);
+        if(descInput.trim().length() > 0 && descInput != null) {
+            if(type.equals("add")) {
+                //Take user to next activity
+                Intent intent = new Intent (this, AddVideoActivity.class);
+                intent.putExtra("WORD_NAME",wordName);
+                intent.putExtra("WORD_DESC",descInput);
+                intent.putExtra("TYPE",type);
+                intent.putExtra("USERNAME", username);
+                intent.putExtra("LOGIN_STATUS", login_status);
+                startActivity(intent);
+            }
+            else {
+                new EditTask().execute();
+            }
         }
         else {
-            new EditTask().execute();
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setTitle("Error:");
+            alertDialogBuilder.setMessage("Please enter a short definition/description");
+            alertDialogBuilder.setCancelable(false);
+
+            alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface arg0, int arg1) {
+                    //Do nothing
+                    return;
+                }
+            });
+
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
         }
     }
 
