@@ -8,9 +8,10 @@
 
     <TextView
         android:id="@+id/DescTitle"
-        android:layout_width="345dp"
-        android:layout_height="54dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:paddingLeft="10dp"
         android:text="@string/enter_definition_button"
         android:textAlignment="viewStart"
         android:textSize="36sp"
@@ -21,8 +22,9 @@
 
     <EditText
         android:id="@+id/editDefBox"
-        android:layout_width="380dp"
-        android:layout_height="270dp"
+        android:layout_width="0dp"
+        android:layout_height="250dp"
+        android:layout_margin="15dp"
         android:background="@drawable/my_border"
         android:ems="10"
         android:gravity="start|top"

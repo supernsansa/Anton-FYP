@@ -29,6 +29,7 @@ public class AddWordActivity extends AppCompatActivity {
     private String wordName = "";
     private boolean login_status = false;
     private String username = "null";
+    private boolean netError;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +73,26 @@ public class AddWordActivity extends AppCompatActivity {
         }
     }
 
+    //Creates an alert dialog
+    public void netErrorDialog() {
+        android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle("Error:");
+        alertDialogBuilder.setMessage("Please check your internet connection");
+        alertDialogBuilder.setCancelable(false);
+
+        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                //Return to previous activity
+                finish();
+            }
+        });
+
+        android.app.AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
     public class ProbeTask extends AsyncTask<String, String, String> {
 
         ProgressDialog pdLoading = new ProgressDialog(AddWordActivity.this);
@@ -100,6 +121,7 @@ public class AddWordActivity extends AppCompatActivity {
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+                netError = true;
                 return e.toString();
             }
 
@@ -116,6 +138,7 @@ public class AddWordActivity extends AppCompatActivity {
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
+                netError = true;
                 return e1.toString();
             }
 
@@ -147,6 +170,7 @@ public class AddWordActivity extends AppCompatActivity {
 
             } catch (IOException e) {
                 e.printStackTrace();
+                netError = true;
                 return e.toString();
             } finally {
                 conn.disconnect();
@@ -156,6 +180,11 @@ public class AddWordActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             pdLoading.dismiss();
+
+            if(netError == true) {
+                netErrorDialog();
+            }
+
             //If word isn't already in the db...
             if (result.equals("proceed")) {
                 //Take user to next activity
@@ -187,7 +216,7 @@ public class AddWordActivity extends AppCompatActivity {
                 //If some unknown error occurs
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AddWordActivity.this);
                 alertDialogBuilder.setTitle("Error:");
-                alertDialogBuilder.setMessage("Please check your internet connection");
+                alertDialogBuilder.setMessage("Some error has occured");
                 alertDialogBuilder.setCancelable(false);
 
                 alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {

@@ -25,38 +25,50 @@
 
     <com.google.android.exoplayer2.ui.StyledPlayerView
         android:id="@+id/previewPlayer"
-        android:layout_width="400dp"
+        android:layout_width="0dp"
         android:layout_height="400dp"
-        android:layout_marginBottom="44dp"
-        app:layout_constraintBottom_toTopOf="@+id/galleryButton"
+        android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.454"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addVideoTitle" />
 
     <TextView
         android:id="@+id/addVideoTitle"
-        android:layout_width="345dp"
-        android:layout_height="54dp"
-        android:layout_marginTop="16dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:paddingLeft="10dp"
         android:text="@string/add_video_title"
         android:textAlignment="viewStart"
         android:textSize="36sp"
         android:textStyle="bold|italic"
-        app:layout_constraintBottom_toTopOf="@+id/previewPlayer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.242"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/galleryButton"
-        android:layout_width="211dp"
-        android:layout_height="68dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="108dp"
         android:onClick="chooseVideoFromGallery"
         android:text="@string/select_gallery_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/video_disclaimer" />
+
+    <TextView
+        android:id="@+id/video_disclaimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:padding="14dp"
+        android:text="@string/video_disclaimer"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/previewPlayer" />
 </androidx.constraintlayout.widget.ConstraintLayout>

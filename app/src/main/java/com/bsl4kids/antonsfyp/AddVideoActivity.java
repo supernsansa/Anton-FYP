@@ -1,18 +1,24 @@
  package com.bsl4kids.antonsfyp;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -53,6 +59,8 @@ public class AddVideoActivity extends AppCompatActivity {
     UploadUtility uploadUtility;
     private int wordID;
     private SimpleExoPlayer player;
+    private boolean netError;
+    private static final int STORAGE_PERMISSION_CODE = 101;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,8 +91,57 @@ public class AddVideoActivity extends AppCompatActivity {
         playerView.setPlayer(player);
     }
 
+    //Creates an alert dialog
+    public void netErrorDialog() {
+        android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle("Error:");
+        alertDialogBuilder.setMessage("Please check your internet connection");
+        alertDialogBuilder.setCancelable(false);
+
+        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                //Return to previous activity
+                finish();
+            }
+        });
+
+        android.app.AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
+    // Function to check and request permission.
+    public void checkPermission(String permission, int requestCode)
+    {
+        if (ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_DENIED) {
+
+            // Requesting the permission
+            ActivityCompat.requestPermissions(this, new String[] { permission }, requestCode);
+        }
+        else {
+            Toast.makeText(this, "Permission already granted", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    //Checks if permission was granted
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == STORAGE_PERMISSION_CODE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Storage Permission Granted", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Storage Permission Denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
     //Get video for upload
     public void chooseVideoFromGallery(View view) {
+        checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, STORAGE_PERMISSION_CODE);
         Intent intent = new Intent();
         intent.setType("video/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -152,12 +209,6 @@ public class AddVideoActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-
-            //Show loading dialog
-           // pdLoading.setMessage("\tLoading...");
-            //pdLoading.setCancelable(false);
-            //pdLoading.show();
-
         }
 
         @Override
@@ -166,11 +217,12 @@ public class AddVideoActivity extends AppCompatActivity {
 
                 // Enter URL address where your json file resides
                 // Even you can make call to php file which returns json data
-                url = new URL("http://192.168.1.173:8080/FYP_Scripts/addWord.php");
+                url = new URL("http://" + MainActivity.ip_address + "/FYP_Scripts/addWord.php");
 
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+                netError = true;
                 return e.toString();
             }
 
@@ -187,6 +239,7 @@ public class AddVideoActivity extends AppCompatActivity {
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
+                netError = true;
                 return e1.toString();
             }
 
@@ -219,6 +272,7 @@ public class AddVideoActivity extends AppCompatActivity {
 
             } catch (IOException e) {
                 e.printStackTrace();
+                netError = true;
                 return e.toString();
             } finally {
                 conn.disconnect();
@@ -228,6 +282,10 @@ public class AddVideoActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             //pdLoading.dismiss();
+
+            if(netError == true) {
+                netErrorDialog();
+            }
 
             try {
 
@@ -244,6 +302,7 @@ public class AddVideoActivity extends AppCompatActivity {
             }
             catch (JSONException e) {
                 e.printStackTrace();
+                netErrorDialog();
             }
         }
     }
@@ -258,25 +317,18 @@ public class AddVideoActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-
-            //Show loading dialog
-            //pdLoading.setMessage("\tLoading...");
-            //pdLoading.setCancelable(false);
-            //pdLoading.show();
-
         }
 
         @Override
         protected String doInBackground(String... strings) {
             try {
-
                 // Enter URL address where your json file resides
                 // Even you can make call to php file which returns json data
-                url = new URL("http://192.168.1.173:8080/FYP_Scripts/addVideo.php");
-
+                url = new URL("http://" + MainActivity.ip_address + "/FYP_Scripts/addVideo.php");
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+                netError = true;
                 return e.toString();
             }
 
@@ -293,6 +345,7 @@ public class AddVideoActivity extends AppCompatActivity {
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
+                netError = true;
                 return e1.toString();
             }
 
@@ -326,6 +379,7 @@ public class AddVideoActivity extends AppCompatActivity {
 
             } catch (IOException e) {
                 e.printStackTrace();
+                netError = true;
                 return e.toString();
             }
             finally {
@@ -336,6 +390,10 @@ public class AddVideoActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             //pdLoading.dismiss();
+
+            if(netError == true) {
+                netErrorDialog();
+            }
 
             final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AddVideoActivity.this);
             alertDialogBuilder.setTitle("Status:");
@@ -389,7 +447,7 @@ public class AddVideoActivity extends AppCompatActivity {
                 new AddVideoTask().execute();
             }
             else {
-                return;
+                netErrorDialog();
             }
         }
     }

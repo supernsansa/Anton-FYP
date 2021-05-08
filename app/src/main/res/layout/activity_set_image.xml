@@ -22,9 +22,10 @@
 
     <TextView
         android:id="@+id/addImageTitle"
-        android:layout_width="345dp"
-        android:layout_height="55dp"
-        android:layout_marginTop="16dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:paddingLeft="14dp"
         android:text="@string/select_image_title"
         android:textAlignment="viewStart"
         android:textColor="#000000"
@@ -37,24 +38,37 @@
 
     <Button
         android:id="@+id/galleryButton2"
-        android:layout_width="210dp"
-        android:layout_height="70dp"
-        android:layout_marginBottom="108dp"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginBottom="120dp"
         android:onClick="chooseImageFromGallery"
         android:text="@string/select_gallery_img_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="350dp"
         android:layout_height="350dp"
-        app:layout_constraintBottom_toTopOf="@+id/galleryButton2"
+        android:layout_marginTop="25dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addImageTitle"
         app:srcCompat="@drawable/my_border" />
+
+    <TextView
+        android:id="@+id/disclaimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="15dp"
+        android:text="@string/media_disclaimer"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toTopOf="@+id/galleryButton2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

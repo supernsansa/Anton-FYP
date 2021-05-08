@@ -1,10 +1,14 @@
 package com.bsl4kids.antonsfyp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -56,6 +60,7 @@ public class WordActivity extends AppCompatActivity {
     private String username = "null";
     private boolean liked = false;
     private URL imageURL;
+    private boolean netError;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +117,26 @@ public class WordActivity extends AppCompatActivity {
         super.onRestart();
         videoList = new ArrayList<>();
         new VideoTask().execute();
+    }
+
+    //Creates an alert dialog
+    public void netErrorDialog() {
+        android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle("Error:");
+        alertDialogBuilder.setMessage("Please check your internet connection");
+        alertDialogBuilder.setCancelable(false);
+
+        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                //Return to previous activity
+                finish();
+            }
+        });
+
+        android.app.AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     //Takes user to edit description (not the word name itself)
@@ -211,6 +236,7 @@ public class WordActivity extends AppCompatActivity {
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+                netError = true;
                 return e.toString();
             }
 
@@ -227,6 +253,7 @@ public class WordActivity extends AppCompatActivity {
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
+                netError = true;
                 return e1.toString();
             }
 
@@ -257,6 +284,7 @@ public class WordActivity extends AppCompatActivity {
 
             } catch (IOException e) {
                 e.printStackTrace();
+                netError = true;
                 return e.toString();
             } finally {
                 conn.disconnect();
@@ -267,10 +295,13 @@ public class WordActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
 
             //this method will be running on UI thread
-
+            pdLoading.dismiss();
             pdLoading.dismiss();
 
-            pdLoading.dismiss();
+            if(netError == true) {
+                netErrorDialog();
+            }
+
             try {
 
                 JSONArray jArray = new JSONArray(result);
@@ -302,6 +333,7 @@ public class WordActivity extends AppCompatActivity {
 
             } catch (JSONException | MalformedURLException e) {
                 Toast.makeText(WordActivity.this, e.toString(), Toast.LENGTH_LONG).show();
+                netErrorDialog();
             }
 
         }
@@ -337,6 +369,7 @@ public class WordActivity extends AppCompatActivity {
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+                netError = true;
                 return e.toString();
             }
 
@@ -353,6 +386,7 @@ public class WordActivity extends AppCompatActivity {
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
+                netError = true;
                 return e1.toString();
             }
 
@@ -383,6 +417,7 @@ public class WordActivity extends AppCompatActivity {
 
             } catch (IOException e) {
                 e.printStackTrace();
+                netError = true;
                 return e.toString();
             } finally {
                 conn.disconnect();
@@ -393,10 +428,13 @@ public class WordActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
 
             //this method will be running on UI thread
-
+            pdLoading.dismiss();
             pdLoading.dismiss();
 
-            pdLoading.dismiss();
+            if(netError == true) {
+                netErrorDialog();
+            }
+
             try {
                 JSONArray jArray = new JSONArray(result);
 
@@ -438,6 +476,7 @@ public class WordActivity extends AppCompatActivity {
 
             } catch (JSONException e) {
                 e.printStackTrace();
+                netErrorDialog();
             }
         }
     }
@@ -472,6 +511,7 @@ public class WordActivity extends AppCompatActivity {
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+                netError = true;
                 return e.toString();
             }
 
@@ -488,6 +528,7 @@ public class WordActivity extends AppCompatActivity {
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
+                netError = true;
                 return e1.toString();
             }
 
@@ -519,6 +560,7 @@ public class WordActivity extends AppCompatActivity {
 
             } catch (IOException e) {
                 e.printStackTrace();
+                netError = true;
                 return e.toString();
             } finally {
                 conn.disconnect();
@@ -527,6 +569,10 @@ public class WordActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result) {
+
+            if(netError == true) {
+                netErrorDialog();
+            }
 
             //this method will be running on UI thread
             pdLoading.dismiss();
@@ -579,6 +625,7 @@ public class WordActivity extends AppCompatActivity {
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+                netError = true;
                 return e.toString();
             }
 
@@ -595,6 +642,7 @@ public class WordActivity extends AppCompatActivity {
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
+                netError = true;
                 return e1.toString();
             }
 
@@ -626,6 +674,7 @@ public class WordActivity extends AppCompatActivity {
 
             } catch (IOException e) {
                 e.printStackTrace();
+                netError = true;
                 return e.toString();
             } finally {
                 conn.disconnect();
@@ -637,6 +686,10 @@ public class WordActivity extends AppCompatActivity {
 
             //this method will be running on UI thread
             pdLoading.dismiss();
+
+            if(netError == true) {
+                netErrorDialog();
+            }
 
             TextView numLikes = (TextView) findViewById(R.id.num_likes);
             numLikes.setText(String.valueOf(word.getNumLikes() + "\uD83D\uDC4D"));
@@ -661,6 +714,7 @@ public class WordActivity extends AppCompatActivity {
             } catch (Exception e) {
                 Log.e("Error", e.getMessage());
                 e.printStackTrace();
+                netError = true;
                 bmp = null;
             }
             return bmp;
@@ -668,6 +722,11 @@ public class WordActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Bitmap result) {
+
+            if(netError == true) {
+                netErrorDialog();
+            }
+
             ImageView image = (ImageView) findViewById(R.id.image);
             if(result != null) {
                 image.setImageBitmap(result);

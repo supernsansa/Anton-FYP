@@ -313,9 +313,7 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
 
         //Get all words associated with a tag
         protected String getWordTags() {
-            System.out.println("made it here");
             try {
-                System.out.println("made it here2");
                 // Enter URL address where your json file resides
                 // Even you can make call to php file which returns json data
                 url = new URL("http://" + MainActivity.ip_address + "/FYP_Scripts/fetchTagWord.php");

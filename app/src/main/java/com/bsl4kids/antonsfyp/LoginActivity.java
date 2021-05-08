@@ -26,6 +26,7 @@ public class LoginActivity extends AppCompatActivity {
     private String email = "";
     private String password = "";
     private String username = "";
+    public boolean netError;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +69,26 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    //Creates an alert dialog
+    public void netErrorDialog() {
+        android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle("Error:");
+        alertDialogBuilder.setMessage("Please check your internet connection");
+        alertDialogBuilder.setCancelable(false);
+
+        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                //Return to previous activity
+                finish();
+            }
+        });
+
+        android.app.AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
     public class LoginTask extends AsyncTask<String, String, String> {
 
         ProgressDialog pdLoading = new ProgressDialog(LoginActivity.this);
@@ -91,11 +112,12 @@ public class LoginActivity extends AppCompatActivity {
 
                 // Enter URL address where your json file resides
                 // Even you can make call to php file which returns json data
-                url = new URL("http://192.168.1.173:8080/FYP_Scripts/login.php");
+                url = new URL("http://" + MainActivity.ip_address + "/FYP_Scripts/login.php");
 
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+                netError = true;
                 return e.toString();
             }
             try {
@@ -111,6 +133,7 @@ public class LoginActivity extends AppCompatActivity {
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
+                netError = true;
                 return e1.toString();
             }
 
@@ -153,6 +176,11 @@ public class LoginActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             pdLoading.dismiss();
             pdLoading.dismiss();
+
+            if(netError == true) {
+                netErrorDialog();
+            }
+
             //If word isn't already in the db...
             if (!result.equals("Login Failure")) {
                 username = result;

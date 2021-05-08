@@ -26,6 +26,7 @@ public class RegisterActivity extends AppCompatActivity {
     private String email = "";
     private String username = "";
     private String password = "";
+    private boolean netError;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +67,26 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
+    //Creates an alert dialog
+    public void netErrorDialog() {
+        android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle("Error:");
+        alertDialogBuilder.setMessage("Please check your internet connection");
+        alertDialogBuilder.setCancelable(false);
+
+        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                //Return to previous activity
+                finish();
+            }
+        });
+
+        android.app.AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
     public class RegisterTask extends AsyncTask<String, String, String> {
 
         ProgressDialog pdLoading = new ProgressDialog(RegisterActivity.this);
@@ -94,6 +115,7 @@ public class RegisterActivity extends AppCompatActivity {
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+                netError = true;
                 return e.toString();
             }
             try {
@@ -109,6 +131,7 @@ public class RegisterActivity extends AppCompatActivity {
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
+                netError = true;
                 return e1.toString();
             }
 
@@ -142,6 +165,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             } catch (IOException e) {
                 e.printStackTrace();
+                netError = true;
                 return e.toString();
             } finally {
                 conn.disconnect();
@@ -152,6 +176,11 @@ public class RegisterActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             pdLoading.dismiss();
             pdLoading.dismiss();
+
+            if(netError == true) {
+                netErrorDialog();
+            }
+
             //If word isn't already in the db...
             if (result.equals("Account Created Successfully")) {
                 //Display dialog to notify user that account creation succeeded

@@ -46,4 +46,6 @@
     <string name="select_gallery_img_button">Select Image From Gallery</string>
     <string name="text_search_button">Text Search</string>
     <string name="categories_button">Categories</string>
+    <string name="media_disclaimer">Please ensure that the filename of the media you wish to upload contains no spaces</string>
+    <string name="video_disclaimer">Please ensure that the video you will upload contains no spaces in its file name, and is in the MP4 format</string>
 </resources>
