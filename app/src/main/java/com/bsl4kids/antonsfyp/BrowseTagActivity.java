@@ -10,6 +10,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -56,7 +58,6 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
         setContentView(R.layout.activity_browse);
 
         searchTerms = getIntent().getStringExtra("EXTRA_SEARCH_TERMS");
-        new BrowseTagActivity.FetchTask().execute();
 
         SearchView searchView = findViewById(R.id.BrowseSearch);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -79,9 +80,10 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
             }
         });
 
-        //Disable the sort button
+        //Grey out and disable the sort button
         ImageButton sortButton = (ImageButton) findViewById(R.id.sortButton);
-        sortButton.setVisibility(View.GONE);
+        sortButton.getBackground().setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
+        sortButton.setClickable(false);
 
         //Get login status and username
         login_status = getIntent().getBooleanExtra("LOGIN_STATUS",false);
@@ -91,10 +93,14 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
 
         //Get word for which tags will be displayed and disable search bar
         word_spec = getIntent().getBooleanExtra("WORD_SPEC",false);
+        System.out.println(word_spec);
         if(word_spec == true) {
             word_name = getIntent().getStringExtra("WORD_NAME");
+            System.out.println(word_name);
             searchView.setVisibility(View.GONE);
         }
+
+        new BrowseTagActivity.FetchTask().execute();
     }
 
     //Takes user to list of relevant words when a tag is tapped
@@ -159,12 +165,15 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
         @Override
         protected String doInBackground(String... strings) {
             if (searchTerms.equals("*")) {
+                System.out.println("all");
                 return getAllTags();
             }
             else if(word_spec == true) {
+                System.out.println("wordTags");
                 return getWordTags();
             }
             else {
+                System.out.println("search results");
                 return getSearchResults();
             }
         }
@@ -304,8 +313,9 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
 
         //Get all words associated with a tag
         protected String getWordTags() {
+            System.out.println("made it here");
             try {
-
+                System.out.println("made it here2");
                 // Enter URL address where your json file resides
                 // Even you can make call to php file which returns json data
                 url = new URL("http://" + MainActivity.ip_address + "/FYP_Scripts/fetchTagWord.php");
@@ -337,6 +347,7 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
             try {
                 //Encode data to post
                 String post_data = URLEncoder.encode("wordName","UTF-8")+"="+URLEncoder.encode(word_name,"UTF-8");
+                System.out.println(word_name);
 
                 //Send encoded data
                 OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
@@ -392,6 +403,9 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
                     netErrorDialog();
                 }
 
+                System.out.println("Num tags: " + data.size());
+                System.out.println("output: " + result);
+
                 //If no tags are found
                 if(data.size() == 0) {
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(BrowseTagActivity.this);
@@ -426,7 +440,6 @@ public class BrowseTagActivity extends AppCompatActivity implements OnItemClickL
             }
 
             conn.disconnect();
-
         }
     }
 }

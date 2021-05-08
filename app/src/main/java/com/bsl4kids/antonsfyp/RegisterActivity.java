@@ -178,7 +178,7 @@ public class RegisterActivity extends AppCompatActivity {
             else {
                 //Display dialog to notify user that account creation failed
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RegisterActivity.this);
-                alertDialogBuilder.setTitle(result);
+                alertDialogBuilder.setTitle("Account creation failed");
                 alertDialogBuilder.setCancelable(false);
 
                 alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {

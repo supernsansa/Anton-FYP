@@ -23,7 +23,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //getSupportActionBar().hide();
         //If user has logged in/registered, get their status and user name
         login_status = getIntent().getBooleanExtra("LOGIN_STATUS",false);
         if(login_status == true) {
