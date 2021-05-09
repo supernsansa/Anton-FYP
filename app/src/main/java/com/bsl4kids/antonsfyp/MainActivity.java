@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean login_status = false;
     private String username = "null";
-    //Change this to your IP address (on Windows use ipconfig on cmd and find "default gateway"), the port shouldn't be needed (depends on your setup).
+    //Change this to your IP address (on Windows use ipconfig on cmd and find "default gateway"), the port shouldn't be needed (depends on your XAMPP setup).
     public static String ip_address = "192.168.1.173:8080";
 
     @Override

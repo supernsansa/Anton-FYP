@@ -15,7 +15,6 @@ class UploadUtility(activity: Activity) {
 
     var activity = activity;
     var dialog: ProgressDialog? = null
-    //var serverURL: String = "http://192.168.1.173:8080/FYP_Scripts/upload.php"
     var serverURL: String = "http://" + MainActivity.ip_address + "/FYP_Scripts/upload.php"
     var serverUploadDirectoryPath: String = "http://" + MainActivity.ip_address + "FYP_Scripts/Videos/"
     val client = OkHttpClient()
